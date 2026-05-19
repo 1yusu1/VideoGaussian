@@ -1,0 +1,11 @@
+{
+  "name": "videogaussian",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Thin pipeline repo for DA3, gsplat, and Spark-based Gaussian video reconstruction.",
+  "scripts": {
+    "viewer": "node scripts/serve_viewer.js"
+  },
+  "dependencies": {}
+}

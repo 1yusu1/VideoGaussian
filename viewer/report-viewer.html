@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spark Report Viewer</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: rgba(13, 17, 23, 0.82);
+      --line: rgba(255, 255, 255, 0.14);
+      --text: #f0f6fc;
+      --muted: #9fb0c2;
+      --accent: #ff875f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top, rgba(255, 135, 95, 0.18), transparent 28%),
+        radial-gradient(circle at 80% 20%, rgba(76, 154, 255, 0.16), transparent 22%),
+        linear-gradient(180deg, #0d1117 0%, #06090f 100%);
+      color: var(--text);
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hud {
+      position: fixed;
+      inset: 20px auto auto 20px;
+      width: min(420px, calc(100vw - 40px));
+      padding: 18px 18px 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      z-index: 10;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    }
+
+    .title {
+      margin: 0 0 8px;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .desc,
+    .meta,
+    .hint {
+      margin: 0;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .button,
+    .button:visited {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #111;
+      text-decoration: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 140ms ease, opacity 140ms ease;
+    }
+
+    .button.secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--line);
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .meta,
+    .hint {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-size: 14px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+
+    .drop-active .hud {
+      border-color: rgba(255, 135, 95, 0.7);
+      box-shadow: 0 0 0 1px rgba(255, 135, 95, 0.35), 0 20px 50px rgba(0, 0, 0, 0.28);
+    }
+
+    .drop-mask {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.24);
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      z-index: 9;
+    }
+
+    .drop-active .drop-mask {
+      display: grid;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="hud">
+      <h1 class="title">Spark 汇报演示 Viewer</h1>
+      <p class="desc">直接打开本页，选择或拖拽你的 <code>.ply</code> 文件，就可以在浏览器里演示 3D Gaussian Splatting 渲染。</p>
+      <div class="row">
+        <label class="button" for="file-input">选择 PLY 文件</label>
+        <button id="capture-image" class="button secondary" type="button">截图导出 PNG</button>
+        <button id="reset-camera" class="button secondary" type="button">重置视角</button>
+      </div>
+      <input id="file-input" type="file" accept=".ply,.spz,.splat,.ksplat,.zip,.rad,.sog" hidden />
+      <p class="hint">键盘漫游：<code>W A S D</code> 前后左右移动，鼠标拖拽转向，滚轮前后移动，<code>Shift</code> 加速，<code>Ctrl</code> 减速，<code>Q / E</code> 滚转。</p>
+      <p class="hint">截图方法：找到合适角度后，点击“截图导出 PNG”即可保存当前画面。</p>
+      <div id="status" class="status">等待加载文件…</div>
+    </div>
+    <div class="drop-mask">松开鼠标即可加载文件</div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.180.0/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+        "@sparkjsdev/spark": "https://sparkjs.dev/releases/spark/2.0.0/spark.module.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { SparkControls, SparkRenderer, SplatMesh } from "@sparkjsdev/spark";
+
+    const app = document.getElementById("app");
+    const statusEl = document.getElementById("status");
+    const fileInput = document.getElementById("file-input");
+    const resetCameraButton = document.getElementById("reset-camera");
+    const captureImageButton = document.getElementById("capture-image");
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x06090f);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 1000);
+    const defaultCameraPosition = new THREE.Vector3(0, 0, 2.2);
+    camera.position.copy(defaultCameraPosition);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById("app").appendChild(renderer.domElement);
+
+    const spark = new SparkRenderer({ renderer });
+    scene.add(spark);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 0.9);
+    scene.add(ambient);
+
+    const sparkControls = new SparkControls({ canvas: renderer.domElement });
+    let loadedSplat = null;
+
+    function setStatus(message) {
+      statusEl.textContent = message;
+    }
+
+    function resetCamera() {
+      camera.position.copy(defaultCameraPosition);
+    }
+
+    async function loadSplatFile(file) {
+      if (!file) return;
+
+      setStatus(`正在读取 ${file.name}（${(file.size / 1024 / 1024).toFixed(1)} MB）…`);
+
+      try {
+        const fileBytes = new Uint8Array(await file.arrayBuffer());
+        setStatus("文件读取完成，正在创建 Spark 场景…");
+
+        if (loadedSplat) {
+          scene.remove(loadedSplat);
+        }
+
+        loadedSplat = new SplatMesh({ fileBytes, fileName: file.name });
+        loadedSplat.quaternion.set(1, 0, 0, 0);
+        loadedSplat.position.set(0, 0, -1.4);
+        scene.add(loadedSplat);
+
+        resetCamera();
+        setStatus(`已加载：${file.name}。现在可以旋转、缩放并开始演示。`);
+      } catch (error) {
+        console.error(error);
+        setStatus(`加载失败：${error.message || error}`);
+      }
+    }
+
+    fileInput.addEventListener("change", (event) => {
+      loadSplatFile(event.target.files?.[0]);
+    });
+
+    resetCameraButton.addEventListener("click", resetCamera);
+    captureImageButton.addEventListener("click", () => {
+      renderer.render(scene, camera);
+      const link = document.createElement("a");
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      link.href = renderer.domElement.toDataURL("image/png");
+      link.download = `spark-screenshot-${timestamp}.png`;
+      link.click();
+      setStatus("已导出当前画面为 PNG。");
+    });
+
+    window.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      app.classList.add("drop-active");
+    });
+
+    window.addEventListener("dragleave", (event) => {
+      if (event.relatedTarget === null) {
+        app.classList.remove("drop-active");
+      }
+    });
+
+    window.addEventListener("drop", (event) => {
+      event.preventDefault();
+      app.classList.remove("drop-active");
+      const file = event.dataTransfer?.files?.[0];
+      loadSplatFile(file);
+    });
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    renderer.setAnimationLoop(() => {
+      sparkControls.update(camera);
+      renderer.render(scene, camera);
+    });
+
+    setStatus("准备就绪。点击“选择 PLY 文件”即可开始演示。");
+  </script>
+</body>
+</html>

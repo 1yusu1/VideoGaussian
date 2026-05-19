@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors
+.idea/
+.vscode/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Local configs
+configs/pipeline.local.yaml
+.env
+
+# Generated data and model artifacts
+data/
+outputs/
+output/
+renders/
+models/
+weights/
+checkpoints/
+ckpts/
+*.pt
+*.pth
+*.safetensors
+*.npz
+*.npy
+*.ply
+*.spz
+*.splat
+*.ksplat
+*.glb
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.png
+*.jpg
+*.jpeg
+
+# Logs
+*.log
+tb/
+stats/
+vram_peak.log
+training_log.txt

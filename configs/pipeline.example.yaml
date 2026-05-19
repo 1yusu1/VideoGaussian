@@ -1,0 +1,37 @@
+project_name: VideoGaussian
+
+paths:
+  video: /path/to/input/video.mp4
+  depth_anything_repo: /path/to/Depth-Anything-3
+  gsplat_repo: /path/to/gsplat-1.5.3
+  runs_dir: /path/to/runs
+  model_dir: /path/to/DA3NESTED-GIANT-LARGE-1.1
+
+run:
+  scene: null
+  conda_env: null
+  test_mode: false
+  skip_da3: false
+  skip_train: false
+  merge: true
+
+da3:
+  fps: 6
+  export_format: colmap-mini_npz-depth_vis-glb
+  process_res: 504
+  process_res_method: upper_bound_resize
+  ref_view_strategy: middle
+  use_ray_pose: true
+  conf_thresh_percentile: 95
+  num_max_points: 1000000
+
+gsplat:
+  cuda_visible_devices: "0,1"
+  max_steps: 30000
+  eval_steps: null
+  data_factor: 1
+  save_ply_during_train: false
+  enable_viewer: false
+
+viewer:
+  port: 8090
