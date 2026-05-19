@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Thin pipeline repo for DA3, gsplat, and Spark-based Gaussian video reconstruction.",
+  "description": "A lightweight pipeline for reconstructing a 3D Gaussian scene from a single input video.",
   "scripts": {
     "viewer": "node scripts/serve_viewer.js"
   },

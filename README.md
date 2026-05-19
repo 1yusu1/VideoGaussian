@@ -8,7 +8,6 @@ It orchestrates three external projects:
 - gsplat 1.5.3: Gaussian Splatting training.
 - Spark: browser preview for the final `.ply` or `.spz`.
 
-The upstream source trees are dependencies, not vendored code. Keep them cloned and installed on the server, but do not copy them into this repo.
 
 ## Required Setup
 
@@ -122,18 +121,6 @@ If you are viewing from your local machine through SSH, forward the viewer port:
 ssh -L 8090:localhost:8090 <user>@<server>
 ```
 
-## Repository Contents
-
-```text
-scripts/run_video_to_gaussian.sh       # video -> DA3 -> gsplat -> merged PLY
-scripts/prepare_gsplat_dataset.py      # DA3 output -> gsplat COLMAP dataset layout
-scripts/merge_gsplat_checkpoints.py    # multi-rank ckpts -> final PLY
-scripts/config_to_env.py               # YAML config -> shell variables for the main script
-scripts/serve_viewer.js                # local static server for the Spark viewer
-viewer/report-viewer.html              # copied viewer page
-docs/                                 # dependency and workflow notes
-configs/pipeline.example.yaml          # editable config template loaded by --config
-```
 
 ## Notes
 
