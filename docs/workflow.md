@@ -1,16 +1,11 @@
 # Workflow
 
-VideoGaussian's current main path is:
+VideoGaussian's current reproducible experiment paths are:
 
 ```text
-video
-  -> Depth Anything 3 `da3 video`
-  -> DA3 output directory
-  -> gsplat-compatible COLMAP dataset
-  -> gsplat `examples/simple_trainer.py`
-  -> rank-local checkpoints
-  -> merged PLY
-  -> Spark viewer
+video -> frames -> COLMAP/pycolmap -> gsplat dataset -> gsplat -> metrics/report
+video -> Depth Anything 3 -> DA3 COLMAP-style export -> gsplat dataset -> gsplat -> metrics/report
+video -> Depth Anything 3 -> XFeat DA3 global alignment -> gsplat dataset -> gsplat/MCMC -> metrics/report
 ```
 
 DA3 should export at least:
@@ -23,7 +18,7 @@ DA3 should export at least:
   points3D.bin
 ```
 
-The bridge script creates the dataset layout expected by gsplat:
+The bridge script creates the dataset layout expected by gsplat and, when available, copies dense DA3 depth supervision:
 
 ```text
 <RUN_DIR>/gsplat_dataset/
@@ -32,6 +27,7 @@ The bridge script creates the dataset layout expected by gsplat:
     cameras.bin
     images.bin
     points3D.bin
+  dense_depth.npz
 ```
 
 The training output is:
@@ -50,4 +46,13 @@ The final merged result is:
 <RUN_DIR>/<scene>_final.ply
 ```
 
-Dense DA3 depth supervision is not used in the current main path.
+The final report is generated with:
+
+```bash
+bash scripts/make_report.sh \
+  --scene <scene> \
+  --metrics-root <runs_dir> \
+  --output-dir reports
+```
+
+VGGT-Omega is not part of the active workflow because its checkpoint was unavailable for the completed study.

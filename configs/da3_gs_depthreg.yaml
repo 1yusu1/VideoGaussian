@@ -1,0 +1,66 @@
+project_name: VideoGaussian
+method: da3_gs_depthreg
+
+scene: liminal_pool
+
+data:
+  video: assets/liminal_pool.mp4
+  frames_dir: outputs/liminal_pool/frames
+  fps: 12
+  split:
+    test_every: 8
+    test_ratio: null
+    seed: 0
+
+paths:
+  output_root: outputs/liminal_pool
+  da3_output_dir: outputs/liminal_pool/da3
+  dataset_dir: outputs/liminal_pool/da3_gs_depthreg/dataset
+  result_dir: outputs/liminal_pool/da3_gs_depthreg/gsplat
+  gsplat_examples_dir: third_party/gsplat/examples
+
+third_party:
+  depth_anything_3: third_party/depth-anything-3
+  gsplat: third_party/gsplat
+
+models:
+  da3_checkpoint: third_party/depth-anything-3/checkpoints/DA3NESTED-GIANT-LARGE-1.1
+
+da3:
+  output_dir: outputs/liminal_pool/da3
+  fps: 12
+  export_format: colmap-mini_npz-depth_vis-glb
+  process_res: 504
+  process_res_method: upper_bound_resize
+  ref_view_strategy: middle
+  use_ray_pose: true
+  conf_thresh_percentile: 96
+  num_max_points: 1000000
+
+gsplat:
+  data_dir: outputs/liminal_pool/da3_gs_depthreg/dataset
+  result_dir: outputs/liminal_pool/da3_gs_depthreg/gsplat
+  iterations: 30000
+  eval_steps: 30000
+  learning_rates:
+    means: 0.00016
+    colors: 0.0025
+    opacities: 0.05
+    scales: 0.005
+    quats: 0.001
+  depth_regularization:
+    enabled: true
+    type: dense
+    weight: 0.02
+    dense:
+      enabled: true
+      weight: 0.02
+      conf_percentile: 50
+      conf_weighted: true
+  cuda_visible_devices: "0"
+  data_factor: 1
+  extra_args: []
+
+render:
+  output_dir: outputs/liminal_pool/da3_gs_depthreg/renders
+  command: null

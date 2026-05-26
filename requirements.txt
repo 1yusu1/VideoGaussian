@@ -1,1 +1,8 @@
+numpy
+Pillow
 pyyaml
+
+# Optional runtime extras:
+# opencv-python      # frame extraction
+# scikit-image       # windowed SSIM; otherwise a global fallback is used
+# lpips              # perceptual metric
