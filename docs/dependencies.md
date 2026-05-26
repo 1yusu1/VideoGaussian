@@ -1,6 +1,6 @@
 # Dependencies
 
-VideoGaussian depends on three external repositories. They are intentionally not vendored into this repository.
+VideoGaussian depends on external research systems that are intentionally not vendored into this repository.
 
 ## External Repositories
 
@@ -9,7 +9,7 @@ Recommended server layout:
 ```text
 <WORKSPACE>/Depth-Anything-3
 <WORKSPACE>/gsplat-1.5.3
-<WORKSPACE>/spark
+<WORKSPACE>/accelerated_features
 <WORKSPACE>/VideoGaussian
 ```
 
@@ -38,16 +38,28 @@ VideoGaussian currently assumes access to:
 
 Install the gsplat package and the dependencies from its `examples/requirements.txt` in the remote training environment.
 
-### Spark
+### XFeat / accelerated_features
 
-Used only for browser-based preview of exported splat files.
+Used by DA3 global-alignment ablations through `src/videogaus/geometry/align_cameras_epipolar.py`.
+
+Pass the local checkout explicitly:
+
+```bash
+python -m videogaus.geometry.align_cameras_epipolar \
+  --config configs/da3_ga_xfeat_v2_gs.yaml \
+  --xfeat-repo-dir /path/to/accelerated_features
+```
+
+### Browser Viewer
+
+Used only for browser-based preview of exported splat files. It does not require vendoring Spark into this repository.
 
 The local viewer uses:
 
-- Spark CDN/import map from `viewer/report-viewer.html`
-- Node.js static server from `scripts/serve_viewer.js`
+- Spark CDN/import map from `viewer/report-viewer.html`.
+- Node.js static server from `scripts/serve_viewer.js`.
 
-If working offline or modifying Spark itself, build the upstream Spark repo separately.
+If working offline or modifying Spark itself, build the upstream Spark repo separately and adjust the viewer import map.
 
 ## VideoGaussian Python Requirements
 
@@ -59,5 +71,6 @@ The scripts in this repo rely on:
 - `pyyaml` for reading `--config` YAML files.
 - `torch` and `gsplat` from the gsplat environment for checkpoint merging.
 - `da3` from the Depth Anything 3 environment for video inference.
+- `accelerated_features` only when running XFeat global alignment.
 
 Node.js is only needed for `scripts/serve_viewer.js`.

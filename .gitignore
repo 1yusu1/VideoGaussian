@@ -18,6 +18,8 @@ configs/pipeline.local.yaml
 
 # Generated data and model artifacts
 data/
+!src/videogaus/data/
+!src/videogaus/data/*.py
 outputs/
 output/
 renders/
@@ -39,6 +41,7 @@ ckpts/
 *.mov
 *.avi
 *.mkv
+!assets/liminal_pool.mp4
 *.png
 *.jpg
 *.jpeg

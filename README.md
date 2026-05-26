@@ -1,129 +1,142 @@
 # VideoGaussian
 
-VideoGaussian is a thin pipeline repo for training Gaussian Splats from a video.
+VideoGaussian is a reproducible experiment framework for **Geometry-prior video-to-3D Gaussian Splatting reconstruction from casual videos**.
 
-It orchestrates three external projects:
+The repo keeps orchestration, configs, metrics, and reports in the main project, while external methods stay behind `third_party/` path or submodule boundaries:
 
-- Depth Anything 3: video geometry and COLMAP-style export.
-- gsplat 1.5.3: Gaussian Splatting training.
-- Spark: browser preview for the final `.ply` or `.spz`.
+- COLMAP baseline for SfM geometry.
+- Depth Anything 3 for monocular video geometry priors.
+- XFeat-assisted DA3 global alignment ablations inspired by VGGT-X.
+- gsplat for Gaussian Splatting training and rendering.
 
-
-## Required Setup
-
-Prepare a config from the template:
-
-```bash
-cp configs/pipeline.example.yaml configs/my_scene.yaml
-```
-
-Edit these fields in `configs/my_scene.yaml`:
-
-```yaml
-paths:
-  video: <input_video>
-  depth_anything_repo: <Depth-Anything-3_repo>
-  gsplat_repo: <gsplat-1.5.3_repo>
-  runs_dir: <output_root>
-  model_dir: <local_DA3_model_dir>
-
-gsplat:
-  cuda_visible_devices: "0,1"
-  max_steps: 30000
-```
-
-Required environment assumptions:
-
-- `da3 video` works inside the current environment.
-- `$GSPLAT_REPO/examples/simple_trainer.py` exists.
-- `python -c "from gsplat import export_splats"` works.
-- Node.js is available if you want to use the local Spark viewer.
-
-## Test The Pipeline
-
-Run a short smoke test first. This uses 100 gsplat steps and should finish with a merged PLY.
-
-Single GPU:
-
-```bash
-cd <VideoGaussian_repo>
-
-bash scripts/run_video_to_gaussian.sh \
-  --config configs/my_scene.yaml \
-  --gpus 0 \
-  --test-mode
-```
-
-Two GPUs:
-
-```bash
-bash scripts/run_video_to_gaussian.sh \
-  --config configs/my_scene.yaml \
-  --test-mode
-```
-
-Command-line options override the YAML config, so the single-GPU test above can reuse the same config and temporarily override `gsplat.cuda_visible_devices`.
-
-Expected output:
+## Repository Layout
 
 ```text
-<RUNS_DIR>/<scene>_test_<timestamp>/
-  da3_output/
-  gsplat_dataset/
-  gsplat_result/
-  <scene>_test_final.ply
-  pipeline.log
+configs/              Experiment YAML files.
+scripts/              Thin shell entry points.
+src/videogaus/        Python package for data, geometry, gsplat, and eval.
+third_party/          Submodules or path notes only.
+outputs/              Generated runs.
+reports/              Markdown summaries.
+assets/               Local videos and qualitative assets.
 ```
 
-The script disables gsplat's live viewer by default so it can finish and merge checkpoints. Add `--enable-viewer` only when you want to inspect training live; that mode keeps the gsplat process open after training.
+## Setup
 
-## Full Training
-
-After the smoke test succeeds, run full training:
+Install the lightweight VideoGaussian helpers:
 
 ```bash
-bash scripts/run_video_to_gaussian.sh \
-  --config configs/my_scene.yaml
+pip install -r requirements.txt
+export PYTHONPATH="$PWD/src:${PYTHONPATH:-}"
 ```
 
-Important parameters:
+Install external systems separately following their upstream instructions:
 
-- `da3.fps`: frame sampling rate for DA3. Lower values reduce frames and training cost.
-- `da3.conf_thresh_percentile`: confidence filter for DA3 COLMAP export. Higher values reduce `points3D.bin` and gsplat initialization size.
-- `gsplat.cuda_visible_devices`: visible GPU ids for gsplat training.
-- `gsplat.max_steps`: gsplat training iterations.
-- `--save-ply-during-train`: disabled by default. In multi-GPU training, gsplat keeps a rank-local shard of the Gaussians on each GPU, so the built-in training-time PLY export writes only that rank's subset. We still need a post-processing merge step, so this pipeline uses `scripts/merge_gsplat_checkpoints.py` after training.
+- COLMAP CLI available as `colmap`.
+- Depth Anything 3 CLI available as `da3`, or configured through `third_party.depth_anything_3`.
+- XFeat available through a local `verlab/accelerated_features` checkout for DA3 global alignment.
+- gsplat examples available at `third_party/gsplat/examples` or `paths.gsplat_examples_dir`.
 
-## View Results
+Public external repositories can be added as Git submodules; you usually do not need to contact maintainers, but you must follow each project license and model weight terms.
 
-Use the Spark viewer:
+## One-Command Stages
+
+Prepare frames and train/test split:
 
 ```bash
-cd <VideoGaussian_repo>
-node scripts/serve_viewer.js
+bash scripts/prepare_video.sh \
+  --video assets/scene.mp4 \
+  --frames-dir outputs/scene/frames \
+  --fps 6 \
+  --test-every 8
 ```
 
-Open:
-
-```text
-http://localhost:8090/
-```
-
-Load the final output:
-
-```text
-<RUNS_DIR>/<scene>_<timestamp>/<scene>_final.ply
-```
-
-If you are viewing from your local machine through SSH, forward the viewer port:
+Run COLMAP baseline:
 
 ```bash
-ssh -L 8090:localhost:8090 <user>@<server>
+bash scripts/run_colmap_baseline.sh \
+  --config configs/colmap_gs.yaml \
+  --image-dir outputs/scene/frames \
+  --output-dir outputs/scene/colmap
 ```
 
+Run Depth Anything 3 pipeline:
 
-## Notes
+```bash
+bash scripts/run_da3_pipeline.sh \
+  --config configs/da3_gs.yaml \
+  --input assets/scene.mp4 \
+  --output-dir outputs/scene/da3
+```
 
-- Generated outputs, videos, checkpoints, model weights, and splats are ignored by git.
-- The current pipeline uses DA3 COLMAP-style export, not dense DA3 depth supervision.
-- See `docs/dependencies.md` for the external repo boundary.
+Run DA3 global alignment with XFeat:
+
+```bash
+bash scripts/run_da3_global_align.sh \
+  --config configs/da3_ga_xfeat_v2_gs.yaml \
+  --source-dir outputs/scene/da3 \
+  --output-dir outputs/scene/da3_ga_xfeat_v2 \
+  --xfeat-repo-dir /path/to/accelerated_features
+```
+
+Train gsplat from a config:
+
+```bash
+python -m videogaus.gaussian.train_gsplat --config configs/da3_gs.yaml
+```
+
+Render with a configured gsplat render command:
+
+```bash
+python -m videogaus.gaussian.render --config configs/da3_gs.yaml --split test
+```
+
+Evaluate novel-view synthesis:
+
+```bash
+bash scripts/eval_nvs.sh \
+  --pred-dir outputs/scene/da3_gs/renders/test \
+  --gt-dir outputs/scene/frames \
+  --output-dir outputs/scene/metrics/da3_gs \
+  --scene scene \
+  --method da3_gs
+```
+
+Generate a report:
+
+```bash
+bash scripts/make_report.sh \
+  --scene scene \
+  --metrics-root outputs/scene/metrics \
+  --output-dir reports
+```
+
+The report includes a method table, PSNR/SSIM/LPIPS table, qualitative comparison section, failure cases, and runtime/memory table.
+
+## Configs
+
+Starting configs:
+
+- `configs/colmap_gs.yaml`
+- `configs/da3_gs.yaml`
+- `configs/da3_gs_depthreg.yaml`
+- `configs/da3_ga_xfeat_v2_gs.yaml`
+- `configs/da3_ga_xfeat_v2_mcmc_pose_depthreg.yaml`
+
+Each config includes data paths, split settings, model paths, gsplat iterations, learning rates, depth regularization weight, and output paths. Checkpoint paths and external repository paths are config fields or CLI arguments and are not hard-coded in the source.
+
+## Useful Modules
+
+```bash
+python -m videogaus.data.extract_frames --video assets/scene.mp4 --output-dir outputs/scene/frames --fps 6
+python -m videogaus.data.split_train_test --frames-dir outputs/scene/frames --test-every 8
+python -m videogaus.geometry.depth_to_points --depth depth.npy --cameras-json cameras.json --output points.npz
+python -m videogaus.geometry.align_scale --source da3_points.npz --reference outputs/scene/colmap/sparse_txt/points3D.txt --output da3_aligned.npz
+python -m videogaus.geometry.align_cameras_epipolar --config configs/da3_ga_xfeat_v2_gs.yaml
+python -m videogaus.gaussian.init_gaussians --source da3_aligned.npz --output-dir outputs/scene/init/da3
+python -m videogaus.eval.summarize --metrics-root outputs/scene/metrics --output-dir reports --scene scene --report
+```
+
+## Legacy Compatibility
+
+`scripts/run_video_to_gaussian.sh` is retained as a compatibility wrapper and now calls `src/videogaus/pipelines/video_to_gaussian.py`. New experiments should prefer the explicit stage scripts above so every geometry prior and metric artifact is easy to reproduce.

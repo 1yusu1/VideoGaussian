@@ -20,10 +20,10 @@ Edit `configs/my_scene.yaml` with the video path, upstream repo paths, model pat
 Smoke test:
 
 ```bash
-bash scripts/run_video_to_gaussian.sh \
-  --config configs/my_scene.yaml \
-  --test-mode
+python -m compileall src scripts
 ```
+
+For the liminal_pool study, follow `AGENTS.md`: use `project_310`, keep large outputs under `/data1/panshihan/videogaussian_runs`, and run the explicit stage scripts for DA3, global alignment, gsplat training, evaluation, and report generation. The legacy `scripts/run_video_to_gaussian.sh` wrapper is retained, but explicit stages are preferred for reproducible comparisons.
 
 For live gsplat inspection, add `--enable-viewer` and forward port 8080:
 
