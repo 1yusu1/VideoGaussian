@@ -1,0 +1,12 @@
+[submodule "third_party/depth-anything-3"]
+	path = third_party/depth-anything-3
+	url = https://github.com/ByteDance-Seed/depth-anything-3.git
+	branch = main
+[submodule "third_party/gsplat"]
+	path = third_party/gsplat
+	url = https://github.com/1yusu1/gsplat-videogaussian.git
+	branch = videogaussian-depthreg
+[submodule "third_party/accelerated_features"]
+	path = third_party/accelerated_features
+	url = https://github.com/verlab/accelerated_features.git
+	branch = main
