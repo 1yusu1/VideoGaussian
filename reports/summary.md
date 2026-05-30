@@ -14,6 +14,8 @@
 | liminal_pool | fps12_conf96 | da3_gs_fps12_conf96 | 26.4729 | 0.8723 | 0.2516 | 1880719 | 0.0094 | 1396.4150 |
 | liminal_pool | fps12_conf96 | da3_gs_sparse_depthreg_fps12_conf96 | 26.6368 | 0.8739 | 0.2353 | 1815594 | 0.0100 | 1610.1480 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_dense_depthreg_fps12_conf96 | 27.1033 | 0.8797 | 0.1845 | 2000636 | 0.0085 | 1748.4650 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_dense_depthreg_fps12_conf96 | 27.2221 | 0.8821 | 0.1855 | 2200000 | 0.0160 | 3034.9239 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_pose_dense_depthreg_fps12_conf96 | 26.7115 | 0.8772 | 0.1536 | 2200000 | 0.0146 | 2865.3260 |
 | liminal_pool | fps2 | colmap_gs_fps2 | 26.0179 | 0.8665 | 0.2731 | 1570118 | 0.0092 | 1593.8011 |
 | liminal_pool | fps24_conf96 | colmap_gs_fps24_conf96 | 34.5433 | 0.9600 | 0.0813 | 1745683 | 0.0095 | 1634.4473 |
 | liminal_pool | fps2_conf70 | da3_gs_dense_depthreg_fps2_conf70 | 18.8310 | 0.7162 | 0.4738 | 1443703 | 0.0199 | 1840.1487 |

@@ -246,7 +246,10 @@ def _observations(rows: list[dict[str, Any]]) -> str:
     if len(fps12_da3) >= 2:
         lines.append("- On fps12/conf96, DA3 depth regularization improves DA3 initialization modestly but does not close the gap to COLMAP.")
     xfeat_mask_rows = [
-        row for row in fps12_da3 if "da3_xfeat_mask_dense_depthreg" in str(row.get("method", ""))
+        row
+        for row in fps12_da3
+        if str(row.get("method", "")).startswith("da3_xfeat_mask")
+        and "dense_depthreg" in str(row.get("method", ""))
     ]
     naive_da3_rows = [row for row in fps12_da3 if str(row.get("method", "")) == "da3_gs_fps12_conf96"]
     if xfeat_mask_rows and naive_da3_rows:
@@ -258,6 +261,37 @@ def _observations(rows: list[dict[str, Any]]) -> str:
             f"SSIM `{_fmt(best_xfeat_mask.get('ssim'))}`, LPIPS `{_fmt(best_xfeat_mask.get('lpips'))}` versus "
             f"`{naive_da3.get('method')}` at PSNR `{_fmt(naive_da3.get('psnr'))}`, "
             f"SSIM `{_fmt(naive_da3.get('ssim'))}`, LPIPS `{_fmt(naive_da3.get('lpips'))}`."
+        )
+    fixed_xfeat_rows = [
+        row for row in xfeat_mask_rows if "mcmc" not in str(row.get("method", ""))
+    ]
+    xfeat_mcmc_rows = [
+        row
+        for row in xfeat_mask_rows
+        if "mcmc_dense_depthreg" in str(row.get("method", "")) and "pose" not in str(row.get("method", ""))
+    ]
+    if fixed_xfeat_rows and xfeat_mcmc_rows:
+        fixed_best = max(fixed_xfeat_rows, key=lambda row: float(row.get("psnr") or float("-inf")))
+        mcmc_best = max(xfeat_mcmc_rows, key=lambda row: float(row.get("psnr") or float("-inf")))
+        lines.append(
+            "- Adding MCMC to the fixed-camera XFeat-mask dataset improves PSNR/SSIM but costs render and train time: "
+            f"`{mcmc_best.get('method')}` reaches PSNR `{_fmt(mcmc_best.get('psnr'))}`, "
+            f"SSIM `{_fmt(mcmc_best.get('ssim'))}`, LPIPS `{_fmt(mcmc_best.get('lpips'))}` versus "
+            f"`{fixed_best.get('method')}` at PSNR `{_fmt(fixed_best.get('psnr'))}`, "
+            f"SSIM `{_fmt(fixed_best.get('ssim'))}`, LPIPS `{_fmt(fixed_best.get('lpips'))}`."
+        )
+    xfeat_pose_rows = [
+        row for row in xfeat_mask_rows if "mcmc_pose" in str(row.get("method", ""))
+    ]
+    if xfeat_pose_rows and xfeat_mcmc_rows:
+        pose_lpips_best = min(xfeat_pose_rows, key=lambda row: float(row.get("lpips") or float("inf")))
+        mcmc_best = max(xfeat_mcmc_rows, key=lambda row: float(row.get("psnr") or float("-inf")))
+        lines.append(
+            "- Low-LR gsplat pose optimization is a perceptual trade-off on top of fixed-camera XFeat-mask MCMC: "
+            f"`{pose_lpips_best.get('method')}` improves LPIPS to `{_fmt(pose_lpips_best.get('lpips'))}` "
+            f"but drops PSNR/SSIM to `{_fmt(pose_lpips_best.get('psnr'))}`/`{_fmt(pose_lpips_best.get('ssim'))}` "
+            f"relative to the no-pose MCMC result `{mcmc_best.get('method')}` at "
+            f"`{_fmt(mcmc_best.get('psnr'))}`/`{_fmt(mcmc_best.get('ssim'))}`."
         )
     ga_rows = [row for row in fps12_da3 if "da3_ga_xfeat_gs" in str(row.get("method", ""))]
     direct_rows = [row for row in fps12_da3 if str(row.get("method", "")).startswith("da3_gs_")]

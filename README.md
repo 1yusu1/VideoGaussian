@@ -121,10 +121,20 @@ Starting configs:
 - `configs/da3_gs.yaml`
 - `configs/da3_gs_depthreg.yaml`
 - `configs/da3_xfeat_mask_dense_depthreg.yaml`
+- `configs/da3_xfeat_mask_mcmc_dense_depthreg.yaml`
+- `configs/da3_xfeat_mask_mcmc_pose_dense_depthreg.yaml`
 - `configs/da3_ga_xfeat_v2_gs.yaml`
 - `configs/da3_ga_xfeat_v2_mcmc_pose_depthreg.yaml`
 
 Each config includes data paths, split settings, model paths, gsplat iterations, learning rates, depth regularization weight, and output paths. Checkpoint paths and external repository paths are config fields or CLI arguments and are not hard-coded in the source.
+
+Current `liminal_pool fps12_conf96` DA3/VGGTX target results:
+
+| Method | PSNR | SSIM | LPIPS | Note |
+|---|---:|---:|---:|---|
+| `da3_gs` | 26.4729 | 0.8723 | 0.2516 | Naive DA3 initialization baseline |
+| `da3_xfeat_mask_mcmc_dense_depthreg` | 27.2221 | 0.8821 | 0.1855 | Best PSNR/SSIM target |
+| `da3_xfeat_mask_mcmc_pose_dense_depthreg` | 26.7115 | 0.8772 | 0.1536 | Best LPIPS/perceptual target |
 
 ## Useful Modules
 

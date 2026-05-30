@@ -107,3 +107,55 @@ Gate status:
 | Engineering PSNR/SSIM/LPIPS target | passed |
 
 This result supports keeping DA3 cameras fixed while introducing VGGTX/XFeat as a support-selection signal. It also confirms that the previous negative GA results were not caused by XFeat matching itself; the damaging part was the pose-refinement path disturbing DA3 camera-depth coupling.
+
+## Additional Component Results
+
+After the fixed-camera XFeat-mask result passed the gate, two additional gsplat-side components were tested on the same dataset:
+
+```bash
+python -m videogaus.gaussian.train_gsplat \
+  --config configs/da3_xfeat_mask_mcmc_dense_depthreg.yaml \
+  --data-dir "$RUN/da3_xfeat_mask_dense_depthreg/dataset" \
+  --result-dir "$RUN/da3_xfeat_mask_mcmc_dense_depthreg/gsplat" \
+  --gsplat-examples-dir "$GSPLAT_EXAMPLES" \
+  --iterations 30000 \
+  --eval-steps 30000 \
+  --save-steps 30000
+```
+
+```bash
+python -m videogaus.gaussian.train_gsplat \
+  --config configs/da3_xfeat_mask_mcmc_pose_dense_depthreg.yaml \
+  --data-dir "$RUN/da3_xfeat_mask_dense_depthreg/dataset" \
+  --result-dir "$RUN/da3_xfeat_mask_mcmc_pose_dense_depthreg/gsplat" \
+  --gsplat-examples-dir "$GSPLAT_EXAMPLES" \
+  --iterations 30000 \
+  --eval-steps 30000 \
+  --save-steps 30000
+```
+
+Additional artifacts:
+
+```text
+da3_xfeat_mask_mcmc_dense_depthreg/gsplat/
+da3_xfeat_mask_mcmc_pose_dense_depthreg/gsplat/
+logs/da3_xfeat_mask_mcmc_dense_depthreg_train_20260531.log
+logs/da3_xfeat_mask_mcmc_pose_dense_depthreg_train_20260531.log
+```
+
+Both smoke tests were run for 1000 steps and their `smoke_gsplat` directories were deleted only after `realpath` confirmed that they were inside this experiment's own output directory.
+
+30k additional results:
+
+| Method | PSNR | SSIM | LPIPS | #GS | Render s/img | Train Time (s) | Notes |
+|---|---:|---:|---:|---:|---:|---:|---|
+| `da3_xfeat_mask_dense_depthreg` | 27.1033 | 0.8797 | 0.1845 | 2000636 | 0.0085 | 1748.4650 | Best fixed-camera LPIPS without MCMC |
+| `da3_xfeat_mask_mcmc_dense_depthreg` | 27.2221 | 0.8821 | 0.1855 | 2200000 | 0.0160 | 3034.9239 | Best DA3/VGGTX PSNR and SSIM so far |
+| `da3_xfeat_mask_mcmc_pose_dense_depthreg` | 26.7115 | 0.8772 | 0.1536 | 2200000 | 0.0146 | 2865.3260 | Best DA3/VGGTX LPIPS so far |
+
+Interpretation:
+
+- MCMC is useful when DA3 cameras stay fixed: it improves PSNR from `27.1033` to `27.2221` and SSIM from `0.8797` to `0.8821`, while LPIPS is essentially flat/slightly worse.
+- Low-LR gsplat pose optimization is not the best default if the target is PSNR/SSIM, but it is a strong perceptual component: LPIPS improves from `0.1855` to `0.1536`.
+- The current recommended metric target is therefore split: use `da3_xfeat_mask_mcmc_dense_depthreg` for PSNR/SSIM reporting and `da3_xfeat_mask_mcmc_pose_dense_depthreg` when prioritizing LPIPS/perceptual quality.
+- Both additional methods still remain below COLMAP on this COLMAP-friendly scene; the best gap is now PSNR `7.3212`, SSIM `0.0779`, LPIPS `0.0723` relative to `colmap_gs_fps24_conf96`.
