@@ -123,6 +123,7 @@ Starting configs:
 - `configs/da3_xfeat_mask_dense_depthreg.yaml`
 - `configs/da3_xfeat_mask_mcmc_dense_depthreg.yaml`
 - `configs/da3_xfeat_mask_mcmc_cap2600_dense_depthreg.yaml`
+- `configs/da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70.yaml`
 - `configs/da3_xfeat_mask_mcmc_pose_dense_depthreg.yaml`
 - `configs/da3_ga_xfeat_v2_gs.yaml`
 - `configs/da3_ga_xfeat_v2_mcmc_pose_depthreg.yaml`
@@ -134,7 +135,9 @@ Current `liminal_pool fps12_conf96` DA3/VGGTX target results:
 | Method | PSNR | SSIM | LPIPS | Note |
 |---|---:|---:|---:|---|
 | `da3_gs` | 26.4729 | 0.8723 | 0.2516 | Naive DA3 initialization baseline |
-| `da3_xfeat_mask_mcmc_cap2600_dense_depthreg` | 27.2528 | 0.8825 | 0.1854 | Best PSNR/SSIM target |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70` | 27.3767 | 0.8852 | 0.1686 | Best no-pose PSNR/SSIM/LPIPS target |
+| `da3_xfeat_mask_2400k_mcmc_cap3000_dense_depthreg` | 27.2551 | 0.8827 | 0.1838 | Larger XFeat-mask initialization, 3.0M MCMC cap |
+| `da3_xfeat_mask_mcmc_cap2600_dense_depthreg` | 27.2528 | 0.8825 | 0.1854 | Previous PSNR/SSIM target |
 | `da3_xfeat_mask_mcmc_dense_depthreg` | 27.2221 | 0.8821 | 0.1855 | Previous 2.2M MCMC target |
 | `da3_xfeat_mask_mcmc_pose_lr1e7_dense_depthreg` | 27.1980 | 0.8819 | 0.1817 | Best balanced low-LR pose sweep |
 | `da3_xfeat_mask_mcmc_pose_dense_depthreg` | 26.7115 | 0.8772 | 0.1536 | Best LPIPS/perceptual target |
