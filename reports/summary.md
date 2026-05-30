@@ -16,7 +16,14 @@
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_2400k_mcmc_cap3000_dense_depthreg_fps12_conf96 | 27.2551 | 0.8827 | 0.1838 | 3000000 | 0.0182 | 3621.8573 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_dense_depthreg_fps12_conf96 | 27.1033 | 0.8797 | 0.1845 | 2000636 | 0.0085 | 1748.4650 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_depthreg_fps12_conf96 | 27.2528 | 0.8825 | 0.1854 | 2600000 | 0.0168 | 3354.4538 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf70_fps12_conf96 | 27.3500 | 0.8852 | 0.1677 | 2600000 | 0.0170 | 3131.9398 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_fps12_conf96 | 27.4335 | 0.8864 | 0.1616 | 2600000 | 0.0165 | 3049.0354 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_app_fps12_conf96 | 24.8177 | 0.8329 | 0.1834 | 2600000 | 0.0315 | 4583.1598 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_bilateral_fps12_conf96 | 26.6432 | 0.8686 | 0.1698 | 2600000 | 0.0151 | 4094.9764 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_fps12_conf96 | 27.3767 | 0.8852 | 0.1686 | 2600000 | 0.0163 | 3110.0417 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_opacity001_fps12_conf96 | 27.1043 | 0.8808 | 0.1686 | 2600000 | 0.0123 | 2204.3540 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_sh4_fps12_conf96 | 27.4235 | 0.8854 | 0.1654 | 2600000 | 0.0174 | 3465.6859 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf85_fps12_conf96 | 27.3767 | 0.8856 | 0.1678 | 2600000 | 0.0169 | 3197.1380 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_refine30k_dense_depthreg_fps12_conf96 | 27.1361 | 0.8804 | 0.1941 | 2600000 | 0.0207 | 3395.3490 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap3000_dense_depthreg_fps12_conf96 | 27.1833 | 0.8812 | 0.1884 | 3000000 | 0.0181 | 3662.0717 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_dense_depthreg_fps12_conf96 | 27.2221 | 0.8821 | 0.1855 | 2200000 | 0.0160 | 3034.9239 |

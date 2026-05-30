@@ -248,8 +248,7 @@ def _observations(rows: list[dict[str, Any]]) -> str:
     xfeat_mask_rows = [
         row
         for row in fps12_da3
-        if str(row.get("method", "")).startswith("da3_xfeat_mask")
-        and "dense_depthreg" in str(row.get("method", ""))
+        if _is_xfeat_mask_method(str(row.get("method", "")))
     ]
     naive_da3_rows = [row for row in fps12_da3 if str(row.get("method", "")) == "da3_gs_fps12_conf96"]
     if xfeat_mask_rows and naive_da3_rows:
@@ -268,7 +267,7 @@ def _observations(rows: list[dict[str, Any]]) -> str:
     xfeat_mcmc_rows = [
         row
         for row in xfeat_mask_rows
-        if "mcmc_dense_depthreg" in str(row.get("method", "")) and "pose" not in str(row.get("method", ""))
+        if "mcmc" in str(row.get("method", "")) and "pose" not in str(row.get("method", ""))
     ]
     if fixed_xfeat_rows and xfeat_mcmc_rows:
         fixed_best = max(fixed_xfeat_rows, key=lambda row: float(row.get("psnr") or float("-inf")))
@@ -321,6 +320,10 @@ def _observations(rows: list[dict[str, Any]]) -> str:
     if fps2_rows:
         lines.append("- On fps2, COLMAP remains stronger for this liminal_pool scene; DA3 conf70 adds more points but remains much worse, suggesting noisy or globally inconsistent DA3 geometry.")
     return "\n".join(lines)
+
+
+def _is_xfeat_mask_method(method: str) -> bool:
+    return method.startswith("da3_xfeat_mask") and "smoke" not in method
 
 
 def _fmt(value: Any) -> str:
