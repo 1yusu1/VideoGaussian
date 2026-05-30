@@ -65,6 +65,7 @@ def align_da3_cameras(
     max_points: int = 1000000,
     seed: int = 0,
     device: str = "cuda",
+    skip_pose_refinement: bool = False,
     dry_run: bool = False,
 ) -> dict[str, Any]:
     source = Path(source_dir).expanduser().resolve()
@@ -99,6 +100,7 @@ def align_da3_cameras(
             "matcher": matcher,
             "xfeat_repo_dir": str(xfeat_repo_dir) if xfeat_repo_dir is not None else None,
             "loss_mode": loss_mode,
+            "skip_pose_refinement": skip_pose_refinement,
             "dry_run": True,
         }
         write_json(out / "da3_global_alignment_manifest.json", manifest)
@@ -127,23 +129,27 @@ def align_da3_cameras(
         weight_threshold=match_mask_weight_threshold,
         dilation=match_mask_dilation,
     )
-    refined_extrinsics, loss_history = _optimize_extrinsics(
-        match_set,
-        extrinsics,
-        intrinsics,
-        depth=depth,
-        conf=conf,
-        niter=niter,
-        lr_base=lr_base,
-        lr_end=lr_end,
-        loss_mode=loss_mode,
-        lambda_epipolar=lambda_epipolar,
-        lambda_3d=lambda_3d,
-        lambda_pose_reg=lambda_pose_reg,
-        pose_rot_clamp=pose_rot_clamp,
-        pose_trans_clamp=pose_trans_clamp,
-        device=device,
-    )
+    if skip_pose_refinement:
+        refined_extrinsics = extrinsics.copy()
+        loss_history: list[float] = []
+    else:
+        refined_extrinsics, loss_history = _optimize_extrinsics(
+            match_set,
+            extrinsics,
+            intrinsics,
+            depth=depth,
+            conf=conf,
+            niter=niter,
+            lr_base=lr_base,
+            lr_end=lr_end,
+            loss_mode=loss_mode,
+            lambda_epipolar=lambda_epipolar,
+            lambda_3d=lambda_3d,
+            lambda_pose_reg=lambda_pose_reg,
+            pose_rot_clamp=pose_rot_clamp,
+            pose_trans_clamp=pose_trans_clamp,
+            device=device,
+        )
 
     points3d, points_xyf, colors = _points_from_depth(
         depth,
@@ -211,6 +217,7 @@ def align_da3_cameras(
         "initial_median_epipolar_error": match_set.median_epipolar_error,
         "final_loss": float(loss_history[-1]) if loss_history else None,
         "loss_mode": loss_mode,
+        "skip_pose_refinement": skip_pose_refinement,
         "lr_base": lr_base,
         "lr_end": lr_end,
         "lambda_epipolar": lambda_epipolar,
@@ -1071,6 +1078,7 @@ def main() -> None:
     parser.add_argument("--max-points", type=int, default=None)
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--device", default=None)
+    parser.add_argument("--skip-pose-refinement", action="store_true", default=None)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     cfg = load_config(args.config)
@@ -1117,6 +1125,9 @@ def main() -> None:
         max_points=int(value(args.max_points, ["global_alignment.max_points"], 1000000)),
         seed=int(value(args.seed, ["global_alignment.seed"], 0)),
         device=value(args.device, ["global_alignment.device"], "cuda"),
+        skip_pose_refinement=bool(
+            value(args.skip_pose_refinement, ["global_alignment.skip_pose_refinement"], False)
+        ),
         dry_run=args.dry_run,
     )
     print(json.dumps(manifest, indent=2))
