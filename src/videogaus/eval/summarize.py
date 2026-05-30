@@ -140,9 +140,7 @@ def _infer_setting(run_parts: list[str]) -> str:
 
 
 def _method_label(method: str, setting: str, run_parts: list[str]) -> str:
-    if "dense_depthreg" in method:
-        base = "da3_gs_dense_depthreg"
-    elif method == "da3_gs_depthreg":
+    if method == "da3_gs_depthreg":
         base = "da3_gs_sparse_depthreg"
     else:
         base = method
@@ -247,6 +245,20 @@ def _observations(rows: list[dict[str, Any]]) -> str:
     fps12_da3 = [row for row in rows if row.get("setting") == "fps12_conf96" and str(row.get("method", "")).startswith("da3")]
     if len(fps12_da3) >= 2:
         lines.append("- On fps12/conf96, DA3 depth regularization improves DA3 initialization modestly but does not close the gap to COLMAP.")
+    xfeat_mask_rows = [
+        row for row in fps12_da3 if "da3_xfeat_mask_dense_depthreg" in str(row.get("method", ""))
+    ]
+    naive_da3_rows = [row for row in fps12_da3 if str(row.get("method", "")) == "da3_gs_fps12_conf96"]
+    if xfeat_mask_rows and naive_da3_rows:
+        best_xfeat_mask = max(xfeat_mask_rows, key=lambda row: float(row.get("psnr") or float("-inf")))
+        naive_da3 = naive_da3_rows[0]
+        lines.append(
+            "- Keeping DA3 cameras fixed while using XFeat as a match-mask support signal beats naive DA3 initialization: "
+            f"`{best_xfeat_mask.get('method')}` reaches PSNR `{_fmt(best_xfeat_mask.get('psnr'))}`, "
+            f"SSIM `{_fmt(best_xfeat_mask.get('ssim'))}`, LPIPS `{_fmt(best_xfeat_mask.get('lpips'))}` versus "
+            f"`{naive_da3.get('method')}` at PSNR `{_fmt(naive_da3.get('psnr'))}`, "
+            f"SSIM `{_fmt(naive_da3.get('ssim'))}`, LPIPS `{_fmt(naive_da3.get('lpips'))}`."
+        )
     ga_rows = [row for row in fps12_da3 if "da3_ga_xfeat_gs" in str(row.get("method", ""))]
     direct_rows = [row for row in fps12_da3 if str(row.get("method", "")).startswith("da3_gs_")]
     if ga_rows and direct_rows:

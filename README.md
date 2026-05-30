@@ -120,6 +120,7 @@ Starting configs:
 - `configs/colmap_gs.yaml`
 - `configs/da3_gs.yaml`
 - `configs/da3_gs_depthreg.yaml`
+- `configs/da3_xfeat_mask_dense_depthreg.yaml`
 - `configs/da3_ga_xfeat_v2_gs.yaml`
 - `configs/da3_ga_xfeat_v2_mcmc_pose_depthreg.yaml`
 

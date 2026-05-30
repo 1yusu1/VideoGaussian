@@ -15,6 +15,7 @@
 | fps12_conf96 | da3_gs_dense_depthreg_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_gs_dense_depthreg/gsplat |
 | fps12_conf96 | da3_gs_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_gs/gsplat |
 | fps12_conf96 | da3_gs_sparse_depthreg_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_gs_depthreg/gsplat |
+| fps12_conf96 | da3_xfeat_mask_dense_depthreg_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_dense_depthreg/gsplat |
 | fps2 | colmap_gs_fps2 | /data1/panshihan/videogaussian_runs/liminal_pool_fps2_ablation/colmap_gs/gsplat |
 | fps24_conf96 | colmap_gs_fps24_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_colmap_vs_da3/colmap_gs/gsplat |
 | fps2_conf70 | da3_gs_dense_depthreg_fps2_conf70 | /data1/panshihan/videogaussian_runs/liminal_pool_fps2_conf_sweep/conf70/da3_gs_dense_depthreg/gsplat |
@@ -35,6 +36,7 @@
 | fps12_conf96 | da3_gs_dense_depthreg_fps12_conf96 | 26.7192 | 0.8746 | 0.2316 | 1497448 |
 | fps12_conf96 | da3_gs_fps12_conf96 | 26.4729 | 0.8723 | 0.2516 | 1880719 |
 | fps12_conf96 | da3_gs_sparse_depthreg_fps12_conf96 | 26.6368 | 0.8739 | 0.2353 | 1815594 |
+| fps12_conf96 | da3_xfeat_mask_dense_depthreg_fps12_conf96 | 27.1033 | 0.8797 | 0.1845 | 2000636 |
 | fps2 | colmap_gs_fps2 | 26.0179 | 0.8665 | 0.2731 | 1570118 |
 | fps24_conf96 | colmap_gs_fps24_conf96 | 34.5433 | 0.9600 | 0.0813 | 1745683 |
 | fps2_conf70 | da3_gs_dense_depthreg_fps2_conf70 | 18.8310 | 0.7162 | 0.4738 | 1443703 |
@@ -45,6 +47,7 @@
 - Best PSNR is `34.5433` from `colmap_gs_fps24_conf96` in `fps24_conf96`.
 - Best LPIPS is `0.0813` from `colmap_gs_fps24_conf96` in `fps24_conf96`.
 - On fps12/conf96, DA3 depth regularization improves DA3 initialization modestly but does not close the gap to COLMAP.
+- Keeping DA3 cameras fixed while using XFeat as a match-mask support signal beats naive DA3 initialization: `da3_xfeat_mask_dense_depthreg_fps12_conf96` reaches PSNR `27.1033`, SSIM `0.8797`, LPIPS `0.1845` versus `da3_gs_fps12_conf96` at PSNR `26.4729`, SSIM `0.8723`, LPIPS `0.2516`.
 - VGGT-X-style epipolar GA is a negative ablation on this scene: it trails direct DA3 initialization, likely because pose-only alignment disturbs DA3 camera-depth coupling.
 - DA3 GA XFeat v2 recovers part of the epipolar-only GA loss, but still remains below direct DA3 initialization on PSNR/SSIM.
 - MCMC + pose optimization + dense depth regularization improves perceptual LPIPS over v2 default, but lowers PSNR/SSIM and costs more training/render time.
@@ -75,6 +78,7 @@ Add frames with pose drift, depth bleeding, dynamic objects, or textureless regi
 | fps12_conf96 | da3_gs_dense_depthreg_fps12_conf96 | 1466.0963 | 0.0094 | 106.1708 |  |
 | fps12_conf96 | da3_gs_fps12_conf96 | 1396.4150 | 0.0094 | 106.7670 |  |
 | fps12_conf96 | da3_gs_sparse_depthreg_fps12_conf96 | 1610.1480 | 0.0100 | 100.1461 |  |
+| fps12_conf96 | da3_xfeat_mask_dense_depthreg_fps12_conf96 | 1748.4650 | 0.0085 | 117.4087 |  |
 | fps2 | colmap_gs_fps2 | 1593.8011 | 0.0092 | 108.8031 |  |
 | fps24_conf96 | colmap_gs_fps24_conf96 | 1634.4473 | 0.0095 | 105.4122 |  |
 | fps2_conf70 | da3_gs_dense_depthreg_fps2_conf70 | 1840.1487 | 0.0199 | 50.1578 |  |
