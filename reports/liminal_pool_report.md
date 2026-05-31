@@ -23,6 +23,9 @@
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf70_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf70/gsplat |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85/gsplat |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat |
+| fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500/gsplat |
+| fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01/gsplat |
+| fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam/gsplat |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf90_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf90/gsplat |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_app_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_app/gsplat |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_bilateral_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_bilateral/gsplat |
@@ -66,6 +69,9 @@
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf70_fps12_conf96 | 27.3500 | 0.8852 | 0.1677 | 2600000 |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_fps12_conf96 | 27.4335 | 0.8864 | 0.1616 | 2600000 |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96 | 27.4575 | 0.8868 | 0.1586 | 2600000 |
+| fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500_fps12_conf96 | 27.4306 | 0.8861 | 0.1621 | 2600000 |
+| fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01_fps12_conf96 | 27.4601 | 0.8854 | 0.1723 | 2600000 |
+| fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam_fps12_conf96 | 27.4007 | 0.8852 | 0.1639 | 2600000 |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf90_fps12_conf96 | 27.3766 | 0.8856 | 0.1645 | 2600000 |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_app_fps12_conf96 | 24.8177 | 0.8329 | 0.1834 | 2600000 |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_bilateral_fps12_conf96 | 26.6432 | 0.8686 | 0.1698 | 2600000 |
@@ -91,10 +97,11 @@
 - Best PSNR is `34.5433` from `colmap_gs_fps24_conf96` in `fps24_conf96`.
 - Best LPIPS is `0.0813` from `colmap_gs_fps24_conf96` in `fps24_conf96`.
 - On fps12/conf96, DA3 depth regularization improves DA3 initialization modestly but does not close the gap to COLMAP.
-- Keeping DA3 cameras fixed while using XFeat as a match-mask support signal beats naive DA3 initialization: `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96` reaches PSNR `27.4575`, SSIM `0.8868`, LPIPS `0.1586` versus `da3_gs_fps12_conf96` at PSNR `26.4729`, SSIM `0.8723`, LPIPS `0.2516`.
-- Adding MCMC to the fixed-camera XFeat-mask dataset improves PSNR/SSIM but costs render and train time: `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96` reaches PSNR `27.4575`, SSIM `0.8868`, LPIPS `0.1586` versus `da3_xfeat_mask_dense_depthreg_fps12_conf96` at PSNR `27.1033`, SSIM `0.8797`, LPIPS `0.1845`.
-- Combining the current weak-depth setting (`0.005`/`85`) with SH degree 4 is now the best no-pose target. Increasing the MCMC cap to `3.0M`, weakening depth to `0.0025`, raising confidence to `90`, and adding very-low-LR pose optimization did not beat it.
-- Low-LR gsplat pose optimization is a perceptual trade-off on top of fixed-camera XFeat-mask MCMC: `da3_xfeat_mask_mcmc_pose_dense_depthreg_fps12_conf96` improves LPIPS to `0.1536` but drops PSNR/SSIM to `26.7115`/`0.8772` relative to the no-pose MCMC result `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96` at `27.4575`/`0.8868`.
+- Keeping DA3 cameras fixed while using XFeat as a match-mask support signal beats naive DA3 initialization: `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01_fps12_conf96` reaches PSNR `27.4601`, SSIM `0.8854`, LPIPS `0.1723` versus `da3_gs_fps12_conf96` at PSNR `26.4729`, SSIM `0.8723`, LPIPS `0.2516`.
+- Adding MCMC to the fixed-camera XFeat-mask dataset improves PSNR/SSIM but costs render and train time: `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01_fps12_conf96` reaches PSNR `27.4601`, SSIM `0.8854`, LPIPS `0.1723` versus `da3_xfeat_mask_dense_depthreg_fps12_conf96` at PSNR `27.1033`, SSIM `0.8797`, LPIPS `0.1845`.
+- The new `ssim-lambda=0.1` result is PSNR-only: it nudges PSNR to `27.4601`, but the balanced no-pose target remains `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96` at PSNR `27.4575`, SSIM `0.8868`, LPIPS `0.1586`.
+- Visible Adam is a speed component, not a quality component in this run: it cuts training to `2305.2455` s and render time to `0.0145` s/image, but drops quality to `27.4007`/`0.8852`/`0.1639`.
+- Low-LR gsplat pose optimization is a perceptual trade-off on top of fixed-camera XFeat-mask MCMC: `da3_xfeat_mask_mcmc_pose_dense_depthreg_fps12_conf96` improves LPIPS to `0.1536` but drops PSNR/SSIM to `26.7115`/`0.8772` relative to the balanced no-pose MCMC result `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96` at `27.4575`/`0.8868`.
 - VGGT-X-style epipolar GA is a negative ablation on this scene: it trails direct DA3 initialization, likely because pose-only alignment disturbs DA3 camera-depth coupling.
 - DA3 GA XFeat v2 recovers part of the epipolar-only GA loss, but still remains below direct DA3 initialization on PSNR/SSIM.
 - MCMC + pose optimization + dense depth regularization improves perceptual LPIPS over v2 default, but lowers PSNR/SSIM and costs more training/render time.
@@ -133,6 +140,9 @@ Add frames with pose drift, depth bleeding, dynamic objects, or textureless regi
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf70_fps12_conf96 | 3131.9398 | 0.0170 | 58.8562 |  |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_fps12_conf96 | 3049.0354 | 0.0165 | 60.6012 |  |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96 | 3408.8328 | 0.0175 | 57.1561 |  |
+| fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500_fps12_conf96 | 3453.3246 | 0.0176 | 56.9229 |  |
+| fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01_fps12_conf96 | 3644.2475 | 0.0179 | 55.8868 |  |
+| fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam_fps12_conf96 | 2305.2455 | 0.0145 | 68.7793 |  |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf90_fps12_conf96 | 3069.3637 | 0.0167 | 60.0145 |  |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_app_fps12_conf96 | 4583.1598 | 0.0315 | 31.7302 |  |
 | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_bilateral_fps12_conf96 | 4094.9764 | 0.0151 | 66.1776 |  |

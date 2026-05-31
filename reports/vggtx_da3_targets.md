@@ -151,7 +151,10 @@ Both smoke tests were run for 1000 steps and their `smoke_gsplat` directories we
 |---|---:|---:|---:|---:|---:|---:|---|
 | `da3_xfeat_mask_dense_depthreg` | 27.1033 | 0.8797 | 0.1845 | 2000636 | 0.0085 | 1748.4650 | Best fixed-camera LPIPS without MCMC |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` | 27.4575 | 0.8868 | 0.1586 | 2600000 | 0.0175 | 3408.8328 | Best no-pose PSNR/SSIM/LPIPS target so far; promoted config |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01` | 27.4601 | 0.8854 | 0.1723 | 2600000 | 0.0179 | 3644.2475 | Best PSNR-only target; worse SSIM/LPIPS than the balanced SH4 target |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85` | 27.4335 | 0.8864 | 0.1616 | 2600000 | 0.0165 | 3049.0354 | Previous weak-depth target |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500` | 27.4306 | 0.8861 | 0.1621 | 2600000 | 0.0176 | 3453.3246 | Earlier SH activation does not beat the balanced SH4 target |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam` | 27.4007 | 0.8852 | 0.1639 | 2600000 | 0.0145 | 2305.2455 | Visible Adam is a speed component, not a quality improvement |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_sh4` | 27.4235 | 0.8854 | 0.1654 | 2600000 | 0.0174 | 3465.6859 | SH degree 4 is close to best but slower |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf90` | 27.3766 | 0.8856 | 0.1645 | 2600000 | 0.0167 | 3069.3637 | Raising confidence to 90 hurts PSNR versus conf85 |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w00025_conf90` | 27.3725 | 0.8859 | 0.1633 | 2600000 | 0.0168 | 3027.4567 | Weaker depth at conf90 improves LPIPS slightly but not PSNR |
@@ -180,16 +183,19 @@ Interpretation:
 - Weakening dense DA3 depth supervision from weight `0.02`/confidence percentile `50` to weight `0.01`/confidence percentile `70` improved the no-pose target to `27.3767`/`0.8852`/`0.1686`.
 - Weakening it further to weight `0.005` and confidence percentile `85` improved the no-pose target to `27.4335`/`0.8864`/`0.1616`.
 - Combining that weak-depth setting with SH degree 4 is the strongest no-pose component combination so far, reaching `27.4575`/`0.8868`/`0.1586`; it is now promoted to `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml`.
+- Reducing `ssim-lambda` to `0.1` nudges PSNR to `27.4601`, but lowers SSIM to `0.8854` and LPIPS to `0.1723`; promote it only as a PSNR-only target, not as the balanced target.
 - Increasing the cap to `3.0M`, extending MCMC refinement through 30k, or rebuilding the initialization with `2.4M` XFeat-mask points did not beat the `2.6M + w0005/conf85` target. The 2.4M initialization is close, but costs more Gaussians and training time.
 - Increasing the cap to `3.0M` still hurts under weak depth (`27.3103`/`0.8845`/`0.1676`), so the current target should stay at `2.6M`.
 - Raising dense confidence to `90`, weakening depth further to `0.0025`, or adding very-low-LR pose optimization did not beat the fixed-camera `w0005/conf85_sh4` target.
+- Visible Adam improves speed substantially (`2305.2455` s training, `0.0145` s/image render) but lowers quality to `27.4007`/`0.8852`/`0.1639`.
+- Turning on SH degree 4 earlier with `--sh-degree-interval 500` does not help the final metrics (`27.4306`/`0.8861`/`0.1621`).
 - Appearance optimization is a negative component here: it falls to `24.8177`/`0.8329`/`0.1834`, consistent with train-image appearance embeddings not transferring cleanly to held-out views.
 - Bilateral grid also hurts the main validation metrics, though its color-corrected side metrics are strong (`27.4238`/`0.8818`/`0.1580`); keep it as a diagnostic, not the default target metric.
 - Opacity regularization improves speed but gives back too much PSNR/SSIM.
 - Low-LR gsplat pose optimization is not the best default if the target is PSNR/SSIM, but it is a strong perceptual component: LPIPS improves from `0.1855` to `0.1536`.
 - Very low pose learning rates (`3e-7` and `1e-7`) recover most PSNR/SSIM lost by the default pose-optimized run. The `1e-7` run is the best balanced pose sweep at `27.1980`/`0.8819`/`0.1817`, but it does not beat the default pose run's LPIPS `0.1536`.
-- The current recommended metric target is therefore split: use `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` for no-pose PSNR/SSIM/LPIPS reporting and `da3_xfeat_mask_mcmc_pose_dense_depthreg` when prioritizing the absolute best perceptual LPIPS.
-- These methods still remain below COLMAP on this COLMAP-friendly scene; the best no-pose target gap is now PSNR `7.0858`, SSIM `0.0732`, LPIPS `0.0773` relative to `colmap_gs_fps24_conf96`.
+- The current recommended metric target is therefore split: use `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01` only for PSNR-only reporting, `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` for balanced no-pose PSNR/SSIM/LPIPS reporting, and `da3_xfeat_mask_mcmc_pose_dense_depthreg` when prioritizing the absolute best perceptual LPIPS.
+- These methods still remain below COLMAP on this COLMAP-friendly scene. The best PSNR-only no-pose gap is PSNR `7.0832` relative to `colmap_gs_fps24_conf96`; the balanced target gap remains PSNR `7.0858`, SSIM `0.0732`, LPIPS `0.0773`.
 
 ## 2026-05-31 MCMC Cap And Pose LR Sweep
 
@@ -381,3 +387,64 @@ All six variants passed 1000-step smoke tests before full training. Their `smoke
 ```
 
 The SH4 combination is the new best fixed-camera target at PSNR `27.4575`, SSIM `0.8868`, and LPIPS `0.1586`. Increasing the cap to `3.0M`, reducing dense depth weight to `0.0025`, raising dense confidence to `90`, and adding very-low-LR pose optimization did not beat it.
+
+## 2026-05-31 SH4 Loss And Optimizer Component Sweep
+
+This sweep kept the same fixed-camera XFeat-mask dataset, weak dense depth setting, MCMC `2.6M` cap, and SH degree 4. It tested whether loss weighting, MCMC noise, optimizer variants, random background, and earlier SH activation should be added on top of the balanced SH4 target.
+
+Full 30k commands used one-off configs from:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/sweep_configs/
+```
+
+The PSNR-only promoted command is:
+
+```bash
+python -m videogaus.gaussian.train_gsplat \
+  --config configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01.yaml \
+  --data-dir "$RUN/da3_xfeat_mask_dense_depthreg/dataset" \
+  --result-dir "$RUN/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01/gsplat" \
+  --gsplat-examples-dir "$GSPLAT_EXAMPLES" \
+  --iterations 30000 \
+  --eval-steps 30000 \
+  --save-steps 30000
+```
+
+Smoke results at 1000 steps:
+
+| Method | PSNR | SSIM | LPIPS | Outcome |
+|---|---:|---:|---:|---|
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam` | 24.0013 | 0.8397 | 0.3451 | Promising smoke; full run is faster but lower quality |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01` | 23.8661 | 0.8284 | 0.3615 | Promoted to full for PSNR trade-off |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500` | 23.6075 | 0.8330 | 0.3497 | Promoted to full; no final gain |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_noise250k` | 23.5423 | 0.8316 | 0.3523 | Rejected after smoke |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_noise1m` | 23.5149 | 0.8316 | 0.3530 | Rejected after smoke |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim03` | 23.1846 | 0.8309 | 0.3570 | Rejected after smoke |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_random_bkgd` | 23.3393 | 0.8279 | 0.3803 | Rejected after smoke |
+
+Rejected smoke tests:
+
+| Method | Outcome | Reason |
+|---|---|---|
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_sparse_visible_adam` | failed before eval | `sparse_grad` requires `packed=True` |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_packed_sparse_visible_adam` | failed before eval | after adding `--packed`, `SparseAdam.step(visibility_mask)` hit `TypeError: 'Tensor' object is not callable` |
+
+Full-run artifacts:
+
+```text
+da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam/gsplat/
+da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500/gsplat/
+da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01/gsplat/
+logs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam_train_20260531_090003_sh4_component_full.log
+logs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500_train_20260531_090003_sh4_component_full.log
+logs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01_train_20260531_090003_sh4_component_full.log
+```
+
+All smoke outputs created for this sweep were deleted only after `realpath` confirmed that each path ended in this experiment's own `smoke_gsplat` directory under:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96
+```
+
+Conclusion: `--ssim-lambda 0.1` gives the current best no-pose PSNR at `27.4601`, but it hurts SSIM/LPIPS enough that the balanced target remains `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4`. Visible Adam is useful only when speed matters, and sparse-gradient visible Adam is not compatible with this patched trainer stack.
