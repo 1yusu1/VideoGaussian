@@ -112,6 +112,8 @@ This result supports keeping DA3 cameras fixed while introducing VGGTX/XFeat as 
 
 After the fixed-camera XFeat-mask result passed the gate, two additional gsplat-side components were tested on the same dataset:
 
+Note: the first historical MCMC config in this section was retired from tracked `configs/` after stronger targets superseded it. The metric evidence and remote artifacts are retained here; recreate it by copying the closest retained fixed-camera XFeat-mask config and setting MCMC cap `2.2M` with dense depth weight `0.02`/confidence percentile `50`.
+
 ```bash
 python -m videogaus.gaussian.train_gsplat \
   --config configs/da3_xfeat_mask_mcmc_dense_depthreg.yaml \
@@ -201,6 +203,7 @@ Interpretation:
 - Low-LR gsplat pose optimization is not the best default if the target is PSNR/SSIM, but it is a strong perceptual component: LPIPS improves from `0.1855` to `0.1536`.
 - Very low pose learning rates (`3e-7` and `1e-7`) recover most PSNR/SSIM lost by the default pose-optimized run. The `1e-7` run is the best balanced pose sweep at `27.1980`/`0.8819`/`0.1817`, but it does not beat the default pose run's LPIPS `0.1536`.
 - The current recommended metric target is therefore split: use `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01` only for PSNR-only reporting, `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` for balanced no-pose PSNR/SSIM/LPIPS reporting, `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01` for no-pose LPIPS/perceptual reporting, and `da3_xfeat_mask_mcmc_pose_dense_depthreg` when prioritizing the absolute best perceptual LPIPS.
+- The targets branch keeps only stable reproduction configs in `configs/`. Older intermediate configs such as the original 2.2M MCMC target, cap-2.6M dense-depth target, `w001/conf70`, and pre-SH4 `w0005/conf85` target were retired because stronger configs superseded them; their positive and negative evidence remains in this report and `reports/summary.*`.
 - These methods still remain below COLMAP on this COLMAP-friendly scene. The best PSNR-only no-pose gap is PSNR `7.0832` relative to `colmap_gs_fps24_conf96`; the balanced target gap remains PSNR `7.0858`, SSIM `0.0732`, LPIPS `0.0773`; the best no-pose LPIPS gap is now `0.0736`.
 
 ## 2026-05-31 MCMC Cap And Pose LR Sweep
@@ -218,6 +221,8 @@ Smoke outputs were written under each method's own `smoke_gsplat` directory and 
 ```
 
 Commands used the same 30k training budget:
+
+The cap-2.6M dense-depth config in this historical command was retired from tracked `configs/` after weak-depth targets superseded it; the result remains part of the ablation evidence.
 
 ```bash
 python -m videogaus.gaussian.train_gsplat \
@@ -262,7 +267,7 @@ The sweep reused the same fixed-camera XFeat-mask dataset for three training-onl
 /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_2400k_dense_depthreg/dataset
 ```
 
-The then-promoted command was:
+The then-promoted command was retired from tracked `configs/` after stronger weak-depth and SH4 targets superseded it:
 
 ```bash
 python -m videogaus.gaussian.train_gsplat \
@@ -300,7 +305,7 @@ All four variants passed 1000-step smoke tests before full training. Their `smok
 
 This sweep kept the same fixed DA3 cameras, XFeat mask initialization, MCMC cap `2.6M`, and 30k training budget. It tested whether the best `w001/conf70` setting still over-constrained training, and whether additional gsplat components should become part of the default target.
 
-The promoted command is:
+This once-promoted command was retired from tracked `configs/` after the SH4 target superseded it:
 
 ```bash
 python -m videogaus.gaussian.train_gsplat \

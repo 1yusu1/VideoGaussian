@@ -115,44 +115,36 @@ The report includes a method table, PSNR/SSIM/LPIPS table, qualitative compariso
 
 ## Configs
 
-Starting configs:
+Tracked stable configs:
 
 - `configs/colmap_gs.yaml`
 - `configs/da3_gs.yaml`
 - `configs/da3_gs_depthreg.yaml`
 - `configs/da3_xfeat_mask_dense_depthreg.yaml`
-- `configs/da3_xfeat_mask_mcmc_dense_depthreg.yaml`
-- `configs/da3_xfeat_mask_mcmc_cap2600_dense_depthreg.yaml`
-- `configs/da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70.yaml`
-- `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85.yaml`
 - `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml`
 - `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01.yaml`
 - `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01.yaml`
 - `configs/da3_xfeat_mask_mcmc_pose_dense_depthreg.yaml`
 - `configs/da3_ga_xfeat_v2_gs.yaml`
 - `configs/da3_ga_xfeat_v2_mcmc_pose_depthreg.yaml`
+- `configs/pipeline.example.yaml`
 
 Each config includes data paths, split settings, model paths, gsplat iterations, learning rates, depth regularization weight, and output paths. Checkpoint paths and external repository paths are config fields or CLI arguments and are not hard-coded in the source.
+
+Older intermediate target configs are intentionally retired from `configs/` once a stronger stable target supersedes them. Their positive and negative evidence remains in `reports/vggtx_da3_targets.md`, `reports/summary.*`, and the remote run directories.
 
 Current `liminal_pool fps12_conf96` DA3/VGGTX target results:
 
 | Method | PSNR | SSIM | LPIPS | Note |
 |---|---:|---:|---:|---|
 | `da3_gs` | 26.4729 | 0.8723 | 0.2516 | Naive DA3 initialization baseline |
+| `da3_xfeat_mask_dense_depthreg` | 27.1033 | 0.8797 | 0.1845 | First fixed-camera XFeat-mask result |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` | 27.4575 | 0.8868 | 0.1586 | Best no-pose PSNR/SSIM/LPIPS target |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01` | 27.4601 | 0.8854 | 0.1723 | Best PSNR-only target; worse SSIM/LPIPS |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01` | 27.3809 | 0.8835 | 0.1549 | Best no-pose LPIPS/perceptual target |
-| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2` | 27.4336 | 0.8850 | 0.1555 | Batch-size 2 LPIPS trade-off |
-| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85` | 27.4335 | 0.8864 | 0.1616 | Previous weak-depth target |
-| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500` | 27.4306 | 0.8861 | 0.1621 | Earlier SH activation; no gain over balanced target |
-| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam` | 27.4007 | 0.8852 | 0.1639 | Faster training/render, lower quality |
-| `da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_sh4` | 27.4235 | 0.8854 | 0.1654 | Earlier SH degree 4 sweep |
-| `da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70` | 27.3767 | 0.8852 | 0.1686 | Previous no-pose target |
-| `da3_xfeat_mask_2400k_mcmc_cap3000_dense_depthreg` | 27.2551 | 0.8827 | 0.1838 | Larger XFeat-mask initialization, 3.0M MCMC cap |
-| `da3_xfeat_mask_mcmc_cap2600_dense_depthreg` | 27.2528 | 0.8825 | 0.1854 | Previous PSNR/SSIM target |
-| `da3_xfeat_mask_mcmc_dense_depthreg` | 27.2221 | 0.8821 | 0.1855 | Previous 2.2M MCMC target |
-| `da3_xfeat_mask_mcmc_pose_lr1e7_dense_depthreg` | 27.1980 | 0.8819 | 0.1817 | Best balanced low-LR pose sweep |
 | `da3_xfeat_mask_mcmc_pose_dense_depthreg` | 26.7115 | 0.8772 | 0.1536 | Best LPIPS/perceptual target |
+
+The full ablation matrix, including retired configs, negative results, smoke failures, and remote artifact paths, lives in `reports/vggtx_da3_targets.md`.
 
 ## Useful Modules
 
