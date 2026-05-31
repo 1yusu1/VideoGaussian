@@ -1,0 +1,69 @@
+project_name: VideoGaussian
+method: da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4
+
+scene: liminal_pool
+
+data:
+  video: assets/liminal_pool.mp4
+  fps: 12
+  split:
+    test_every: 8
+    test_ratio: null
+    seed: 0
+
+paths:
+  output_root: outputs/liminal_pool
+  da3_output_dir: outputs/liminal_pool/da3
+  ga_output_dir: outputs/liminal_pool/da3_xfeat_mask
+  dataset_dir: outputs/liminal_pool/da3_xfeat_mask_dense_depthreg/dataset
+  result_dir: outputs/liminal_pool/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat
+  gsplat_examples_dir: third_party/gsplat/examples
+  xfeat_repo_dir: third_party/accelerated_features
+
+global_alignment:
+  matcher: xfeat
+  loss_mode: epi3d
+  angle_threshold: 30
+  temporal_window: 10
+  max_keypoints: 4096
+  max_matches_per_pair: 2048
+  match_batch_size: 16
+  niter: 0
+  skip_pose_refinement: true
+  lambda_epipolar: 1.0
+  lambda_3d: 0.1
+  lambda_pose_reg: 0.01
+  pose_rot_clamp: 0.0
+  pose_trans_clamp: 0.0
+  conf_percentile: 96
+  conf_percentile_mode: per-frame
+  use_match_mask: true
+  match_mask_weight_threshold: 0.1
+  match_mask_dilation: 3
+  max_points: 1800000
+
+gsplat:
+  data_dir: outputs/liminal_pool/da3_xfeat_mask_dense_depthreg/dataset
+  result_dir: outputs/liminal_pool/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat
+  strategy: mcmc
+  mcmc:
+    cap_max: 2600000
+  iterations: 30000
+  eval_steps: 30000
+  save_steps: 30000
+  cuda_visible_devices: "0"
+  data_factor: 1
+  pose_optimization:
+    enabled: false
+  depth_regularization:
+    enabled: true
+    type: dense
+    weight: 0.005
+    dense:
+      enabled: true
+      weight: 0.005
+      conf_percentile: 85
+      conf_weighted: true
+  extra_args:
+    - --sh-degree
+    - "4"

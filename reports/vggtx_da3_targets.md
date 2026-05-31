@@ -150,8 +150,14 @@ Both smoke tests were run for 1000 steps and their `smoke_gsplat` directories we
 | Method | PSNR | SSIM | LPIPS | #GS | Render s/img | Train Time (s) | Notes |
 |---|---:|---:|---:|---:|---:|---:|---|
 | `da3_xfeat_mask_dense_depthreg` | 27.1033 | 0.8797 | 0.1845 | 2000636 | 0.0085 | 1748.4650 | Best fixed-camera LPIPS without MCMC |
-| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85` | 27.4335 | 0.8864 | 0.1616 | 2600000 | 0.0165 | 3049.0354 | Best no-pose PSNR/SSIM/LPIPS target so far; promoted config |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` | 27.4575 | 0.8868 | 0.1586 | 2600000 | 0.0175 | 3408.8328 | Best no-pose PSNR/SSIM/LPIPS target so far; promoted config |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85` | 27.4335 | 0.8864 | 0.1616 | 2600000 | 0.0165 | 3049.0354 | Previous weak-depth target |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70_sh4` | 27.4235 | 0.8854 | 0.1654 | 2600000 | 0.0174 | 3465.6859 | SH degree 4 is close to best but slower |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf90` | 27.3766 | 0.8856 | 0.1645 | 2600000 | 0.0167 | 3069.3637 | Raising confidence to 90 hurts PSNR versus conf85 |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w00025_conf90` | 27.3725 | 0.8859 | 0.1633 | 2600000 | 0.0168 | 3027.4567 | Weaker depth at conf90 improves LPIPS slightly but not PSNR |
+| `da3_xfeat_mask_mcmc_cap2600_pose_lr1e7_dense_w0005_conf85` | 27.3694 | 0.8859 | 0.1623 | 2600000 | 0.0166 | 3126.4952 | Very-low-LR pose does not beat the fixed-camera weak-depth target |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w00025_conf85` | 27.3245 | 0.8851 | 0.1664 | 2600000 | 0.0171 | 3076.6383 | Weight 0.0025 under-regularizes relative to w0005 |
+| `da3_xfeat_mask_mcmc_cap3000_dense_w0005_conf85` | 27.3103 | 0.8845 | 0.1676 | 3000000 | 0.0181 | 3344.0500 | More capacity hurts with the weak-depth setting too |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w001_conf70` | 27.3767 | 0.8852 | 0.1686 | 2600000 | 0.0163 | 3110.0417 | Previous no-pose target |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w001_conf85` | 27.3767 | 0.8856 | 0.1678 | 2600000 | 0.0169 | 3197.1380 | Raising confidence to 85 helps LPIPS but not PSNR unless depth weight is also reduced |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf70` | 27.3500 | 0.8852 | 0.1677 | 2600000 | 0.0170 | 3131.9398 | Weaker depth weight helps LPIPS, but conf85 is better |
@@ -172,16 +178,18 @@ Interpretation:
 - MCMC is useful when DA3 cameras stay fixed: it improves PSNR from `27.1033` to `27.2221` and SSIM from `0.8797` to `0.8821`, while LPIPS is essentially flat/slightly worse.
 - Increasing the no-pose MCMC cap from `2.2M` to `2.6M` gives a small PSNR/SSIM gain, reaching `27.2528`/`0.8825`.
 - Weakening dense DA3 depth supervision from weight `0.02`/confidence percentile `50` to weight `0.01`/confidence percentile `70` improved the no-pose target to `27.3767`/`0.8852`/`0.1686`.
-- Weakening it further to weight `0.005` and confidence percentile `85` is the strongest no-pose component combination so far, reaching `27.4335`/`0.8864`/`0.1616`; it is now promoted to `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85.yaml`.
+- Weakening it further to weight `0.005` and confidence percentile `85` improved the no-pose target to `27.4335`/`0.8864`/`0.1616`.
+- Combining that weak-depth setting with SH degree 4 is the strongest no-pose component combination so far, reaching `27.4575`/`0.8868`/`0.1586`; it is now promoted to `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml`.
 - Increasing the cap to `3.0M`, extending MCMC refinement through 30k, or rebuilding the initialization with `2.4M` XFeat-mask points did not beat the `2.6M + w0005/conf85` target. The 2.4M initialization is close, but costs more Gaussians and training time.
-- SH degree 4 nearly matches the new target at `27.4235`/`0.8854`/`0.1654`, but it is slower and does not beat w0005/conf85.
+- Increasing the cap to `3.0M` still hurts under weak depth (`27.3103`/`0.8845`/`0.1676`), so the current target should stay at `2.6M`.
+- Raising dense confidence to `90`, weakening depth further to `0.0025`, or adding very-low-LR pose optimization did not beat the fixed-camera `w0005/conf85_sh4` target.
 - Appearance optimization is a negative component here: it falls to `24.8177`/`0.8329`/`0.1834`, consistent with train-image appearance embeddings not transferring cleanly to held-out views.
 - Bilateral grid also hurts the main validation metrics, though its color-corrected side metrics are strong (`27.4238`/`0.8818`/`0.1580`); keep it as a diagnostic, not the default target metric.
 - Opacity regularization improves speed but gives back too much PSNR/SSIM.
 - Low-LR gsplat pose optimization is not the best default if the target is PSNR/SSIM, but it is a strong perceptual component: LPIPS improves from `0.1855` to `0.1536`.
 - Very low pose learning rates (`3e-7` and `1e-7`) recover most PSNR/SSIM lost by the default pose-optimized run. The `1e-7` run is the best balanced pose sweep at `27.1980`/`0.8819`/`0.1817`, but it does not beat the default pose run's LPIPS `0.1536`.
-- The current recommended metric target is therefore split: use `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85` for no-pose PSNR/SSIM/LPIPS reporting and `da3_xfeat_mask_mcmc_pose_dense_depthreg` when prioritizing the absolute best perceptual LPIPS.
-- These methods still remain below COLMAP on this COLMAP-friendly scene; the best no-pose target gap is now PSNR `7.1098`, SSIM `0.0736`, LPIPS `0.0803` relative to `colmap_gs_fps24_conf96`.
+- The current recommended metric target is therefore split: use `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` for no-pose PSNR/SSIM/LPIPS reporting and `da3_xfeat_mask_mcmc_pose_dense_depthreg` when prioritizing the absolute best perceptual LPIPS.
+- These methods still remain below COLMAP on this COLMAP-friendly scene; the best no-pose target gap is now PSNR `7.0858`, SSIM `0.0732`, LPIPS `0.0773` relative to `colmap_gs_fps24_conf96`.
 
 ## 2026-05-31 MCMC Cap And Pose LR Sweep
 
@@ -325,3 +333,51 @@ All smoke-test directories created in this sweep were deleted only after explici
 ```text
 /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96
 ```
+
+## 2026-05-31 SH4, Capacity, Confidence, And Pose Sweep
+
+This sweep reused the fixed-camera XFeat-mask dataset and started from the best weak-depth setting, `weight=0.005` and `conf_percentile=85`. It tested whether SH degree 4 should be combined with that setting, whether more MCMC capacity still helps, whether the dense confidence mask should be tightened, and whether a very-low-LR pose variant can beat the fixed-camera result.
+
+The promoted command is:
+
+```bash
+python -m videogaus.gaussian.train_gsplat \
+  --config configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml \
+  --data-dir "$RUN/da3_xfeat_mask_dense_depthreg/dataset" \
+  --result-dir "$RUN/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat" \
+  --gsplat-examples-dir "$GSPLAT_EXAMPLES" \
+  --iterations 30000 \
+  --eval-steps 30000 \
+  --save-steps 30000
+```
+
+The one-off sweep configs remained outside git under:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/sweep_configs/
+```
+
+Additional artifacts:
+
+```text
+da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat/
+da3_xfeat_mask_mcmc_cap3000_dense_w0005_conf85/gsplat/
+da3_xfeat_mask_mcmc_cap2600_dense_w00025_conf85/gsplat/
+da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf90/gsplat/
+da3_xfeat_mask_mcmc_cap2600_dense_w00025_conf90/gsplat/
+da3_xfeat_mask_mcmc_cap2600_pose_lr1e7_dense_w0005_conf85/gsplat/
+logs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_train_20260601.log
+logs/da3_xfeat_mask_mcmc_cap3000_dense_w0005_conf85_train_20260601.log
+logs/da3_xfeat_mask_mcmc_cap2600_dense_w00025_conf85_train_20260601.log
+logs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf90_train_20260601.log
+logs/da3_xfeat_mask_mcmc_cap2600_dense_w00025_conf90_train_20260601.log
+logs/da3_xfeat_mask_mcmc_cap2600_pose_lr1e7_dense_w0005_conf85_train_20260601.log
+```
+
+All six variants passed 1000-step smoke tests before full training. Their `smoke_gsplat` outputs were deleted only after explicit `realpath` checks confirmed they were inside:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96
+```
+
+The SH4 combination is the new best fixed-camera target at PSNR `27.4575`, SSIM `0.8868`, and LPIPS `0.1586`. Increasing the cap to `3.0M`, reducing dense depth weight to `0.0025`, raising dense confidence to `90`, and adding very-low-LR pose optimization did not beat it.
