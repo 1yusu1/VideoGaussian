@@ -111,7 +111,7 @@ bash scripts/make_report.sh \
   --output-dir reports
 ```
 
-The report includes a method table, PSNR/SSIM/LPIPS table, qualitative comparison section, failure cases, and runtime/memory table.
+The script writes `reports/summary.json` plus a scene Markdown report.
 
 ## Configs
 
@@ -135,7 +135,7 @@ Current `liminal_pool fps12_conf96` DA3/VGGTX target result:
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` | 27.4575 | 0.8868 | 0.1586 | Retained balanced positive target |
 | `colmap_gs` | 34.5433 | 0.9600 | 0.0813 | COLMAP-friendly reference |
 
-The retained target improves over naive DA3 by `+0.9846` PSNR, `+0.0145` SSIM, and `-0.0931` LPIPS. The compact evidence and run paths live in `reports/vggtx_da3_targets.md`.
+The retained target improves over naive DA3 by `+0.9846` PSNR, `+0.0145` SSIM, and `-0.0931` LPIPS. The compact evidence and run paths live in `reports/liminal_pool_report.md`.
 
 ## Useful Modules
 

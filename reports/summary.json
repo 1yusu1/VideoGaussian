@@ -50,6 +50,5 @@
       "val_step": 29999
     }
   ],
-  "summary_csv": "/home/panshihan/VideoGaussian/reports/summary.csv",
-  "summary_md": "/home/panshihan/VideoGaussian/reports/summary.md"
+  "summary_json": "/home/panshihan/VideoGaussian/reports/summary.json"
 }
