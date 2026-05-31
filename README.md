@@ -6,7 +6,7 @@ The repo keeps orchestration, configs, metrics, and reports in the main project,
 
 - COLMAP baseline for SfM geometry.
 - Depth Anything 3 for monocular video geometry priors.
-- XFeat-assisted DA3 global alignment ablations inspired by VGGT-X.
+- XFeat-mask DA3 target inspired by VGGT-X.
 - gsplat for Gaussian Splatting training and rendering.
 
 ## Repository Layout
@@ -34,7 +34,7 @@ Install external systems separately following their upstream instructions:
 
 - COLMAP CLI available as `colmap`.
 - Depth Anything 3 CLI available as `da3`, or configured through `third_party.depth_anything_3`.
-- XFeat available through a local `verlab/accelerated_features` checkout for DA3 global alignment.
+- XFeat available through a local `verlab/accelerated_features` checkout for DA3 support selection.
 - gsplat examples available at `third_party/gsplat/examples` or `paths.gsplat_examples_dir`.
 
 Public external repositories can be added as Git submodules; you usually do not need to contact maintainers, but you must follow each project license and model weight terms.
@@ -69,13 +69,13 @@ bash scripts/run_da3_pipeline.sh \
   --output-dir outputs/scene/da3
 ```
 
-Run DA3 global alignment with XFeat:
+Build the fixed-camera DA3 XFeat-mask target:
 
 ```bash
 bash scripts/run_da3_global_align.sh \
-  --config configs/da3_ga_xfeat_v2_gs.yaml \
+  --config configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml \
   --source-dir outputs/scene/da3 \
-  --output-dir outputs/scene/da3_ga_xfeat_v2 \
+  --output-dir outputs/scene/da3_xfeat_mask \
   --xfeat-repo-dir /path/to/accelerated_features
 ```
 
@@ -120,31 +120,22 @@ Tracked stable configs:
 - `configs/colmap_gs.yaml`
 - `configs/da3_gs.yaml`
 - `configs/da3_gs_depthreg.yaml`
-- `configs/da3_xfeat_mask_dense_depthreg.yaml`
 - `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml`
-- `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01.yaml`
-- `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01.yaml`
-- `configs/da3_xfeat_mask_mcmc_pose_dense_depthreg.yaml`
-- `configs/da3_ga_xfeat_v2_gs.yaml`
-- `configs/da3_ga_xfeat_v2_mcmc_pose_depthreg.yaml`
 - `configs/pipeline.example.yaml`
 
 Each config includes data paths, split settings, model paths, gsplat iterations, learning rates, depth regularization weight, and output paths. Checkpoint paths and external repository paths are config fields or CLI arguments and are not hard-coded in the source.
 
-Older intermediate target configs are intentionally retired from `configs/` once a stronger stable target supersedes them. Their positive and negative evidence remains in `reports/vggtx_da3_targets.md`, `reports/summary.*`, and the remote run directories.
+The targets branch keeps only the balanced positive VGGTX/DA3 target in `configs/`; older ablation YAML files and non-selected result rows were removed from the tracked docs.
 
-Current `liminal_pool fps12_conf96` DA3/VGGTX target results:
+Current `liminal_pool fps12_conf96` DA3/VGGTX target result:
 
 | Method | PSNR | SSIM | LPIPS | Note |
 |---|---:|---:|---:|---|
 | `da3_gs` | 26.4729 | 0.8723 | 0.2516 | Naive DA3 initialization baseline |
-| `da3_xfeat_mask_dense_depthreg` | 27.1033 | 0.8797 | 0.1845 | First fixed-camera XFeat-mask result |
-| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` | 27.4575 | 0.8868 | 0.1586 | Best no-pose PSNR/SSIM/LPIPS target |
-| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01` | 27.4601 | 0.8854 | 0.1723 | Best PSNR-only target; worse SSIM/LPIPS |
-| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01` | 27.3809 | 0.8835 | 0.1549 | Best no-pose LPIPS/perceptual target |
-| `da3_xfeat_mask_mcmc_pose_dense_depthreg` | 26.7115 | 0.8772 | 0.1536 | Best LPIPS/perceptual target |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` | 27.4575 | 0.8868 | 0.1586 | Retained balanced positive target |
+| `colmap_gs` | 34.5433 | 0.9600 | 0.0813 | COLMAP-friendly reference |
 
-The full ablation matrix, including retired configs, negative results, smoke failures, and remote artifact paths, lives in `reports/vggtx_da3_targets.md`.
+The retained target improves over naive DA3 by `+0.9846` PSNR, `+0.0145` SSIM, and `-0.0931` LPIPS. The compact evidence and run paths live in `reports/vggtx_da3_targets.md`.
 
 ## Useful Modules
 
@@ -153,7 +144,7 @@ python -m videogaus.data.extract_frames --video assets/scene.mp4 --output-dir ou
 python -m videogaus.data.split_train_test --frames-dir outputs/scene/frames --test-every 8
 python -m videogaus.geometry.depth_to_points --depth depth.npy --cameras-json cameras.json --output points.npz
 python -m videogaus.geometry.align_scale --source da3_points.npz --reference outputs/scene/colmap/sparse_txt/points3D.txt --output da3_aligned.npz
-python -m videogaus.geometry.align_cameras_epipolar --config configs/da3_ga_xfeat_v2_gs.yaml
+python -m videogaus.geometry.align_cameras_epipolar --config configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml
 python -m videogaus.gaussian.init_gaussians --source da3_aligned.npz --output-dir outputs/scene/init/da3
 python -m videogaus.eval.summarize --metrics-root outputs/scene/metrics --output-dir reports --scene scene --report
 ```
