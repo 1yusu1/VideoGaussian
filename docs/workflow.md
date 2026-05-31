@@ -46,7 +46,7 @@ The final merged result is:
 <RUN_DIR>/<scene>_final.ply
 ```
 
-The final report is generated with:
+The final `summary.json` and scene report are generated with:
 
 ```bash
 bash scripts/make_report.sh \

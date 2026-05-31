@@ -68,7 +68,7 @@ logs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_train_20260601.log
 logs/remote_positive_cleanup_20260601.log
 ```
 
-Detailed cleanup history lives in `reports/vggtx_da3_targets.md`.
+The cleanup record also remains on the remote server at `logs/remote_positive_cleanup_20260601.log`.
 
 ## Reproduce
 

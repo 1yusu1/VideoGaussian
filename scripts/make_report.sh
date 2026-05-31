@@ -7,7 +7,7 @@ export PYTHONPATH="${PROJECT_DIR}/src:${PYTHONPATH:-}"
 
 usage() {
   cat <<'EOF'
-Generate a Markdown report from VideoGaussian metrics.
+Generate a JSON summary and Markdown report from VideoGaussian metrics.
 
 Example:
   bash scripts/make_report.sh --scene garden --metrics-root outputs/garden/metrics --output-dir reports
@@ -38,5 +38,6 @@ if [[ -z "$METRICS_ROOT" ]]; then
 fi
 
 args=(--metrics-root "$METRICS_ROOT" --output-dir "$OUTPUT_DIR" --report)
+args+=(--summary-format json)
 [[ -n "$SCENE" ]] && args+=(--scene "$SCENE")
 python -m videogaus.eval.summarize "${args[@]}"

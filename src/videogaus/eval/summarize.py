@@ -1,4 +1,4 @@
-"""Summarize scene/method metrics into CSV, Markdown, and reports."""
+"""Summarize scene/method metrics into JSON and optional reports."""
 
 from __future__ import annotations
 
@@ -34,21 +34,31 @@ def summarize(
     *,
     scene: str | None = None,
     report: bool = False,
+    summary_format: str = "json",
 ) -> dict[str, Any]:
+    if summary_format not in {"json", "all"}:
+        raise ValueError(f"Unsupported summary_format: {summary_format}")
     root = Path(metrics_root).expanduser().resolve()
     out = Path(output_dir).expanduser().resolve()
     out.mkdir(parents=True, exist_ok=True)
     rows = discover_metric_rows(root, scene=scene)
-    summary_csv = out / "summary.csv"
-    with summary_csv.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=SUMMARY_FIELDS)
-        writer.writeheader()
-        for row in rows:
-            writer.writerow({key: row.get(key) for key in SUMMARY_FIELDS})
-    summary_md = out / "summary.md"
-    summary_md.write_text(_summary_markdown(rows), encoding="utf-8")
-    payload = {"metrics_root": str(root), "summary_csv": str(summary_csv), "summary_md": str(summary_md), "rows": rows}
-    write_json(out / "summary.json", payload)
+    summary_json = out / "summary.json"
+    payload = {"metrics_root": str(root), "summary_json": str(summary_json), "rows": rows}
+    if summary_format == "all":
+        summary_csv = out / "summary.csv"
+        with summary_csv.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=SUMMARY_FIELDS)
+            writer.writeheader()
+            for row in rows:
+                writer.writerow({key: row.get(key) for key in SUMMARY_FIELDS})
+        summary_md = out / "summary.md"
+        summary_md.write_text(_summary_markdown(rows), encoding="utf-8")
+        payload["summary_csv"] = str(summary_csv)
+        payload["summary_md"] = str(summary_md)
+    else:
+        for stale_path in (out / "summary.csv", out / "summary.md"):
+            stale_path.unlink(missing_ok=True)
+    write_json(summary_json, payload)
     if report:
         report_scene = scene or (rows[0]["scene"] if rows else "scene")
         (out / f"{report_scene}_report.md").write_text(_report_markdown(report_scene, rows), encoding="utf-8")
@@ -340,9 +350,16 @@ def main() -> None:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--scene", default=None)
     parser.add_argument("--report", action="store_true")
+    parser.add_argument("--summary-format", choices=["json", "all"], default="json")
     args = parser.parse_args()
-    payload = summarize(args.metrics_root, args.output_dir, scene=args.scene, report=args.report)
-    print(payload["summary_md"])
+    payload = summarize(
+        args.metrics_root,
+        args.output_dir,
+        scene=args.scene,
+        report=args.report,
+        summary_format=args.summary_format,
+    )
+    print(payload["summary_json"])
 
 
 if __name__ == "__main__":
