@@ -1,85 +1,96 @@
 # liminal_pool Report
 
-## Method Table
+## Retained Positive
 
-| Setting | Method | Result Directory |
-|---|---|---|
-| fps12_conf96 | da3_ga_xfeat_gs_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_ga_xfeat_gs/gsplat |
-| fps12_conf96 | da3_ga_xfeat_v2_500k_mcmc_pose_depthreg_lr1e6_w001_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_ga_xfeat_v2_500k_mcmc_pose_depthreg_lr1e6_w001/gsplat |
-| fps12_conf96 | da3_ga_xfeat_v2_gs_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_ga_xfeat_v2_gs/gsplat |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_ga_xfeat_v2_mcmc_pose_depthreg/gsplat |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr1e6_w001_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_ga_xfeat_v2_mcmc_pose_depthreg_lr1e6_w001/gsplat |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w0005_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w0005/gsplat |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w001_conf85_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w001_conf85/gsplat |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w001_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w001/gsplat |
-| fps12_conf96 | da3_gs_dense_depthreg_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_gs_dense_depthreg/gsplat |
-| fps12_conf96 | da3_gs_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_gs/gsplat |
-| fps12_conf96 | da3_gs_sparse_depthreg_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_gs_depthreg/gsplat |
-| fps12_conf96 | da3_xfeat_mask_dense_depthreg_fps12_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_dense_depthreg/gsplat |
-| fps2 | colmap_gs_fps2 | /data1/panshihan/videogaussian_runs/liminal_pool_fps2_ablation/colmap_gs/gsplat |
-| fps24_conf96 | colmap_gs_fps24_conf96 | /data1/panshihan/videogaussian_runs/liminal_pool_colmap_vs_da3/colmap_gs/gsplat |
-| fps2_conf70 | da3_gs_dense_depthreg_fps2_conf70 | /data1/panshihan/videogaussian_runs/liminal_pool_fps2_conf_sweep/conf70/da3_gs_dense_depthreg/gsplat |
-| fps2_conf70 | da3_gs_fps2_conf70 | /data1/panshihan/videogaussian_runs/liminal_pool_fps2_conf_sweep/conf70/da3_gs/gsplat |
+This report keeps the `liminal_pool` evidence focused on the single retained positive VGGTX/DA3 target:
 
-## PSNR/SSIM/LPIPS Table
+```text
+da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4
+```
 
-| Setting | Method | PSNR | SSIM | LPIPS | #GS |
+Protocol: `fps12_conf96`, same DA3 output, same train/test split, and same 30k gsplat training budget.
+
+Remote run root:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96
+```
+
+## Metrics
+
+| Role | Method | PSNR | SSIM | LPIPS | #GS |
 |---|---|---:|---:|---:|---:|
-| fps12_conf96 | da3_ga_xfeat_gs_fps12_conf96 | 21.0636 | 0.8044 | 0.4566 | 1006884 |
-| fps12_conf96 | da3_ga_xfeat_v2_500k_mcmc_pose_depthreg_lr1e6_w001_fps12_conf96 | 22.7793 | 0.8234 | 0.3551 | 1800000 |
-| fps12_conf96 | da3_ga_xfeat_v2_gs_fps12_conf96 | 22.7555 | 0.8246 | 0.3535 | 1707957 |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_fps12_conf96 | 21.7470 | 0.7928 | 0.2869 | 1800000 |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr1e6_w001_fps12_conf96 | 22.9551 | 0.8260 | 0.3447 | 1800000 |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w0005_fps12_conf96 | 22.6683 | 0.8183 | 0.3159 | 1800000 |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w001_conf85_fps12_conf96 | 22.7753 | 0.8188 | 0.3182 | 1800000 |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w001_fps12_conf96 | 22.7323 | 0.8179 | 0.3186 | 1800000 |
-| fps12_conf96 | da3_gs_dense_depthreg_fps12_conf96 | 26.7192 | 0.8746 | 0.2316 | 1497448 |
-| fps12_conf96 | da3_gs_fps12_conf96 | 26.4729 | 0.8723 | 0.2516 | 1880719 |
-| fps12_conf96 | da3_gs_sparse_depthreg_fps12_conf96 | 26.6368 | 0.8739 | 0.2353 | 1815594 |
-| fps12_conf96 | da3_xfeat_mask_dense_depthreg_fps12_conf96 | 27.1033 | 0.8797 | 0.1845 | 2000636 |
-| fps2 | colmap_gs_fps2 | 26.0179 | 0.8665 | 0.2731 | 1570118 |
-| fps24_conf96 | colmap_gs_fps24_conf96 | 34.5433 | 0.9600 | 0.0813 | 1745683 |
-| fps2_conf70 | da3_gs_dense_depthreg_fps2_conf70 | 18.8310 | 0.7162 | 0.4738 | 1443703 |
-| fps2_conf70 | da3_gs_fps2_conf70 | 17.9810 | 0.7060 | 0.4612 | 1713092 |
+| Naive DA3 baseline | `da3_gs_fps12_conf96` | 26.4729 | 0.8723 | 0.2516 | 1,880,719 |
+| Retained positive | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96` | 27.4575 | 0.8868 | 0.1586 | 2,600,000 |
+| COLMAP reference | `colmap_gs_fps24_conf96` | 34.5433 | 0.9600 | 0.0813 | 1,745,683 |
 
-## Key Observations
+Delta over naive DA3:
 
-- Best PSNR is `34.5433` from `colmap_gs_fps24_conf96` in `fps24_conf96`.
-- Best LPIPS is `0.0813` from `colmap_gs_fps24_conf96` in `fps24_conf96`.
-- On fps12/conf96, DA3 depth regularization improves DA3 initialization modestly but does not close the gap to COLMAP.
-- Keeping DA3 cameras fixed while using XFeat as a match-mask support signal beats naive DA3 initialization: `da3_xfeat_mask_dense_depthreg_fps12_conf96` reaches PSNR `27.1033`, SSIM `0.8797`, LPIPS `0.1845` versus `da3_gs_fps12_conf96` at PSNR `26.4729`, SSIM `0.8723`, LPIPS `0.2516`.
-- VGGT-X-style epipolar GA is a negative ablation on this scene: it trails direct DA3 initialization, likely because pose-only alignment disturbs DA3 camera-depth coupling.
-- DA3 GA XFeat v2 recovers part of the epipolar-only GA loss, but still remains below direct DA3 initialization on PSNR/SSIM.
-- MCMC + pose optimization + dense depth regularization improves perceptual LPIPS over v2 default, but lowers PSNR/SSIM and costs more training/render time.
-- Weakening pose/depth regularization improves GA+MCMC PSNR/SSIM; the best weakened variant is `da3_ga_xfeat_v2_mcmc_pose_depthreg_lr1e6_w001_fps12_conf96` with PSNR `22.9551`.
-- Reducing GA v2 initialization to 500k points gives MCMC room to add Gaussians, but does not improve metrics over the best 1.8M-init weakened GA+MCMC variant on this scene.
-- On fps2, COLMAP remains stronger for this liminal_pool scene; DA3 conf70 adds more points but remains much worse, suggesting noisy or globally inconsistent DA3 geometry.
+| Metric | Delta |
+|---|---:|
+| PSNR | +0.9846 |
+| SSIM | +0.0145 |
+| LPIPS | -0.0931 |
 
-## Qualitative Comparison
+The target passes the original improvement gate on all three metrics. COLMAP remains stronger on this COLMAP-friendly scene, so the result should be framed as an effective DA3/VGGTX improvement, not as a COLMAP replacement.
 
-Add rendered train/test comparisons from each method here. Recommended layout: ground truth, COLMAP+GS, DA3+GS, DA3+DepthReg, DA3+XFeat-GA-v2.
+## Components
 
-## Failure Cases
+The retained method keeps DA3 cameras fixed and uses VGGTX-style XFeat matches only as a support mask. The final gsplat training uses MCMC cap `2,600,000`, dense DA3 depth regularization weight `0.005`, dense confidence percentile `85`, and SH degree `4`.
 
-Add frames with pose drift, depth bleeding, dynamic objects, or textureless regions here.
+Promoted config:
 
-## Runtime/Memory
+```text
+configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml
+```
 
-| Setting | Method | Training Time (s) | Render s/img | Render FPS | Peak GPU MiB |
-|---|---|---:|---:|---:|---:|
-| fps12_conf96 | da3_ga_xfeat_gs_fps12_conf96 | 1158.3905 | 0.0071 | 141.6705 |  |
-| fps12_conf96 | da3_ga_xfeat_v2_500k_mcmc_pose_depthreg_lr1e6_w001_fps12_conf96 | 3088.2677 | 0.0154 | 65.0595 |  |
-| fps12_conf96 | da3_ga_xfeat_v2_gs_fps12_conf96 | 1702.5219 | 0.0094 | 106.3239 |  |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_fps12_conf96 | 3000.8666 | 0.0160 | 62.5640 |  |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr1e6_w001_fps12_conf96 | 2941.5947 | 0.0152 | 65.9958 |  |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w0005_fps12_conf96 | 2829.4486 | 0.0151 | 66.2042 |  |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w001_conf85_fps12_conf96 | 2868.9370 | 0.0149 | 67.2954 |  |
-| fps12_conf96 | da3_ga_xfeat_v2_mcmc_pose_depthreg_lr3e6_w001_fps12_conf96 | 2869.4625 | 0.0145 | 68.9060 |  |
-| fps12_conf96 | da3_gs_dense_depthreg_fps12_conf96 | 1466.0963 | 0.0094 | 106.1708 |  |
-| fps12_conf96 | da3_gs_fps12_conf96 | 1396.4150 | 0.0094 | 106.7670 |  |
-| fps12_conf96 | da3_gs_sparse_depthreg_fps12_conf96 | 1610.1480 | 0.0100 | 100.1461 |  |
-| fps12_conf96 | da3_xfeat_mask_dense_depthreg_fps12_conf96 | 1748.4650 | 0.0085 | 117.4087 |  |
-| fps2 | colmap_gs_fps2 | 1593.8011 | 0.0092 | 108.8031 |  |
-| fps24_conf96 | colmap_gs_fps24_conf96 | 1634.4473 | 0.0095 | 105.4122 |  |
-| fps2_conf70 | da3_gs_dense_depthreg_fps2_conf70 | 1840.1487 | 0.0199 | 50.1578 |  |
-| fps2_conf70 | da3_gs_fps2_conf70 | 1602.2191 | 0.0102 | 98.0138 |  |
+## Runtime
+
+| Role | Method | Training Time (s) | Render s/img | Render FPS |
+|---|---|---:|---:|---:|
+| Naive DA3 baseline | `da3_gs_fps12_conf96` | 1396.4150 | 0.0094 | 106.7670 |
+| Retained positive | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96` | 3408.8328 | 0.0175 | 57.1561 |
+| COLMAP reference | `colmap_gs_fps24_conf96` | 1634.4473 | 0.0095 | 105.4122 |
+
+## Retained Remote Artifacts
+
+Remote results were pruned to the positive-only retained set. The run root changed from `41G` to `4.6G`.
+
+Remaining paths:
+
+```text
+da3/
+da3_gs/
+da3_xfeat_mask/
+da3_xfeat_mask_dense_depthreg/dataset/
+da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat/
+logs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_train_20260601.log
+logs/remote_positive_cleanup_20260601.log
+```
+
+Detailed cleanup history lives in `reports/vggtx_da3_targets.md`.
+
+## Reproduce
+
+```bash
+python -m videogaus.geometry.align_cameras_epipolar \
+  --config configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml \
+  --source-dir "$RUN/da3" \
+  --output-dir "$RUN/da3_xfeat_mask" \
+  --xfeat-repo-dir "$XFEAT_REPO"
+
+python -m videogaus.geometry.prepare_gsplat_dataset \
+  --source-dir "$RUN/da3_xfeat_mask" \
+  --dense-depth-path "$RUN/da3/exports/mini_npz/results.npz" \
+  --dataset-dir "$RUN/da3_xfeat_mask_dense_depthreg/dataset" \
+  --overwrite
+
+python -m videogaus.gaussian.train_gsplat \
+  --config configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml \
+  --data-dir "$RUN/da3_xfeat_mask_dense_depthreg/dataset" \
+  --result-dir "$RUN/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat" \
+  --gsplat-examples-dir "$GSPLAT_EXAMPLES" \
+  --iterations 30000 \
+  --eval-steps 30000 \
+  --save-steps 30000
+```

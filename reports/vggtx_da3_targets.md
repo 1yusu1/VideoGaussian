@@ -1,68 +1,21 @@
-# VGGTX DA3 Target Plan
+# VGGTX DA3 Retained Target
 
-## Hard Constraints
+## Scope
+
+This targets branch now keeps one positive VGGTX/DA3 method: `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4`.
+
+The goal is no longer to preserve the full ablation matrix in git. Non-selected target YAML files and non-selected result rows were removed from the tracked reports so the branch stays focused on the best balanced result.
+
+Hard constraints kept during this cleanup:
 
 - Do not kill processes that do not belong to this user or this experiment.
 - Do not delete other users' files or existing shared experiment outputs.
-- Only clean smoke-test outputs that are clearly created for this branch's own smoke tests.
-- Record code changes, experiment commands, run directories, and metric outcomes.
+- Only clean smoke-test outputs that were explicitly created for this branch.
+- Leave a tracked record of what changed and which result is retained.
 
-## Baseline And Gates
+## Retained Result
 
-Protocol: `liminal_pool fps12_conf96`, same DA3 output, same train/test split, same 30k gsplat training budget.
-
-Baseline naive DA3 initialization:
-
-| Method | PSNR | SSIM | LPIPS |
-|---|---:|---:|---:|
-| `da3_gs` | 26.4729 | 0.8723 | 0.2516 |
-
-Minimum success gate:
-
-| Metric | Gate |
-|---|---:|
-| PSNR | `> 26.4729` |
-| SSIM | `> 0.8723` |
-| LPIPS | `< 0.2516` |
-
-Engineering target:
-
-| Metric | Gate |
-|---|---:|
-| PSNR | `>= 26.8` |
-| SSIM | `>= 0.875` |
-| LPIPS | `<= 0.240` |
-
-## Next Candidate
-
-`da3_xfeat_mask_dense_depthreg` keeps DA3 cameras unchanged and introduces VGGTX-style XFeat matches only as a confidence mask for DA3 depth point selection. This directly tests whether XFeat-guided spatial support helps without disturbing DA3's camera-depth coupling.
-
-Expected stages:
-
-```bash
-python -m videogaus.geometry.align_cameras_epipolar \
-  --config configs/da3_xfeat_mask_dense_depthreg.yaml \
-  --source-dir "$RUN/da3" \
-  --output-dir "$RUN/da3_xfeat_mask" \
-  --xfeat-repo-dir "$XFEAT_REPO"
-
-python -m videogaus.geometry.prepare_gsplat_dataset \
-  --source-dir "$RUN/da3_xfeat_mask" \
-  --dense-depth-path "$RUN/da3/exports/mini_npz/results.npz" \
-  --dataset-dir "$RUN/da3_xfeat_mask_dense_depthreg/dataset" \
-  --overwrite
-
-python -m videogaus.gaussian.train_gsplat \
-  --config configs/da3_xfeat_mask_dense_depthreg.yaml \
-  --data-dir "$RUN/da3_xfeat_mask_dense_depthreg/dataset" \
-  --result-dir "$RUN/da3_xfeat_mask_dense_depthreg/gsplat" \
-  --gsplat-examples-dir "$GSPLAT_EXAMPLES" \
-  --iterations 30000 \
-  --eval-steps 30000 \
-  --save-steps 30000
-```
-
-## Result
+Protocol: `liminal_pool fps12_conf96`, same DA3 output, same train/test split, same 30k gsplat budget.
 
 Remote run root:
 
@@ -70,40 +23,141 @@ Remote run root:
 /data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96
 ```
 
-Artifacts:
+Retained artifacts:
 
 ```text
 da3_xfeat_mask/
 da3_xfeat_mask_dense_depthreg/dataset/
-da3_xfeat_mask_dense_depthreg/gsplat/
-logs/da3_xfeat_mask_dense_depthreg_train_20260531.log
+da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat/
+logs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_train_20260601.log
 ```
 
-XFeat mask reconstruction:
-
-| Item | Value |
-|---|---:|
-| Images | 181 |
-| Candidate pairs | 1755 |
-| XFeat matches | 2655834 |
-| Initial median epipolar error | 1.1693 px |
-| Skip pose refinement | true |
-| Match-mask pixels | 20634192 |
-| Exported points | 1800000 |
-| Runtime | 54.0 s |
-
-30k gsplat result:
+Metrics:
 
 | Method | PSNR | SSIM | LPIPS | #GS | Render s/img | Train Time (s) |
 |---|---:|---:|---:|---:|---:|---:|
-| `da3_gs` baseline | 26.4729 | 0.8723 | 0.2516 | 1880719 | 0.0094 | 1396.4150 |
-| `da3_xfeat_mask_dense_depthreg` | 27.1033 | 0.8797 | 0.1845 | 2000636 | 0.0085 | 1748.4650 |
+| `da3_gs` baseline | 26.4729 | 0.8723 | 0.2516 | 1,880,719 | 0.0094 | 1396.4150 |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` | 27.4575 | 0.8868 | 0.1586 | 2,600,000 | 0.0175 | 3408.8328 |
+| `colmap_gs` reference | 34.5433 | 0.9600 | 0.0813 | 1,745,683 | 0.0095 | 1634.4473 |
 
-Gate status:
+Delta over naive DA3:
 
-| Gate | Status |
-|---|---|
-| Minimum PSNR/SSIM/LPIPS gate | passed |
-| Engineering PSNR/SSIM/LPIPS target | passed |
+| Metric | Delta |
+|---|---:|
+| PSNR | +0.9846 |
+| SSIM | +0.0145 |
+| LPIPS | -0.0931 |
 
-This result supports keeping DA3 cameras fixed while introducing VGGTX/XFeat as a support-selection signal. It also confirms that the previous negative GA results were not caused by XFeat matching itself; the damaging part was the pose-refinement path disturbing DA3 camera-depth coupling.
+Gap to COLMAP reference:
+
+| Metric | Gap |
+|---|---:|
+| PSNR | -7.0859 |
+| SSIM | -0.0732 |
+| LPIPS | +0.0773 |
+
+## Retained Components
+
+The retained method combines these components:
+
+- Fixed DA3 cameras; no pose refinement.
+- VGGTX-style XFeat matches used only as a match-mask support signal.
+- DA3 dense-depth point selection with per-frame confidence percentile `96`.
+- XFeat match-mask dilation `3`, match-mask weight threshold `0.1`, max exported points `1,800,000`.
+- gsplat MCMC with cap `2,600,000`.
+- Dense DA3 depth regularization with weight `0.005`, confidence percentile `85`, confidence weighting enabled.
+- SH degree `4`.
+
+The promoted config is:
+
+```text
+configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml
+```
+
+## Reproduction Commands
+
+Build the XFeat-mask DA3 model:
+
+```bash
+python -m videogaus.geometry.align_cameras_epipolar \
+  --config configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml \
+  --source-dir "$RUN/da3" \
+  --output-dir "$RUN/da3_xfeat_mask" \
+  --xfeat-repo-dir "$XFEAT_REPO"
+```
+
+Prepare the gsplat dataset:
+
+```bash
+python -m videogaus.geometry.prepare_gsplat_dataset \
+  --source-dir "$RUN/da3_xfeat_mask" \
+  --dense-depth-path "$RUN/da3/exports/mini_npz/results.npz" \
+  --dataset-dir "$RUN/da3_xfeat_mask_dense_depthreg/dataset" \
+  --overwrite
+```
+
+Train the retained target:
+
+```bash
+python -m videogaus.gaussian.train_gsplat \
+  --config configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml \
+  --data-dir "$RUN/da3_xfeat_mask_dense_depthreg/dataset" \
+  --result-dir "$RUN/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat" \
+  --gsplat-examples-dir "$GSPLAT_EXAMPLES" \
+  --iterations 30000 \
+  --eval-steps 30000 \
+  --save-steps 30000
+```
+
+## Cleanup Record
+
+Removed tracked target YAML files that were not the retained balanced positive method:
+
+- `configs/da3_ga_xfeat_v2_gs.yaml`
+- `configs/da3_ga_xfeat_v2_mcmc_pose_depthreg.yaml`
+- `configs/da3_xfeat_mask_dense_depthreg.yaml`
+- `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01.yaml`
+- `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01.yaml`
+- `configs/da3_xfeat_mask_mcmc_pose_dense_depthreg.yaml`
+
+Tracked reports were filtered to the baseline, retained target, and COLMAP reference.
+
+## Remote Result Cleanup
+
+On 2026-05-31, remote experiment outputs under:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96
+```
+
+were also pruned to the positive-only retained set. The cleanup first checked that no `panshihan` process referenced this run root, then deleted only paths under the verified run root.
+
+Size changed from `41G` to `4.6G`.
+
+Remaining top-level remote paths:
+
+- `da3/`
+- `da3_gs/`
+- `da3_xfeat_mask/`
+- `da3_xfeat_mask_dense_depthreg/`
+- `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/`
+- `logs/`
+
+The retained dataset and result paths were verified after cleanup:
+
+```text
+da3_xfeat_mask_dense_depthreg/dataset/
+da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat/
+```
+
+The remote cleanup record is:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/logs/remote_positive_cleanup_20260601.log
+```
+
+The only retained training log is:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/logs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_train_20260601.log
+```
