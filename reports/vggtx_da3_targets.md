@@ -120,4 +120,44 @@ Removed tracked target YAML files that were not the retained balanced positive m
 - `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01.yaml`
 - `configs/da3_xfeat_mask_mcmc_pose_dense_depthreg.yaml`
 
-Tracked reports were filtered to the baseline, retained target, and COLMAP reference. Remote training outputs were not deleted.
+Tracked reports were filtered to the baseline, retained target, and COLMAP reference.
+
+## Remote Result Cleanup
+
+On 2026-05-31, remote experiment outputs under:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96
+```
+
+were also pruned to the positive-only retained set. The cleanup first checked that no `panshihan` process referenced this run root, then deleted only paths under the verified run root.
+
+Size changed from `41G` to `4.6G`.
+
+Remaining top-level remote paths:
+
+- `da3/`
+- `da3_gs/`
+- `da3_xfeat_mask/`
+- `da3_xfeat_mask_dense_depthreg/`
+- `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/`
+- `logs/`
+
+The retained dataset and result paths were verified after cleanup:
+
+```text
+da3_xfeat_mask_dense_depthreg/dataset/
+da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat/
+```
+
+The remote cleanup record is:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/logs/remote_positive_cleanup_20260601.log
+```
+
+The only retained training log is:
+
+```text
+/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/logs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_train_20260601.log
+```
