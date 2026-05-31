@@ -20,7 +20,10 @@
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w00025_conf90_fps12_conf96 | 27.3725 | 0.8859 | 0.1633 | 2600000 | 0.0168 | 3027.4567 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf70_fps12_conf96 | 27.3500 | 0.8852 | 0.1677 | 2600000 | 0.0170 | 3131.9398 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_fps12_conf96 | 27.4335 | 0.8864 | 0.1616 | 2600000 | 0.0165 | 3049.0354 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_fps12_conf96 | 27.4336 | 0.8850 | 0.1555 | 2600000 | 0.0185 | 5990.8590 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01_fps12_conf96 | 27.3809 | 0.8835 | 0.1549 | 2600000 | 0.0185 | 5836.3322 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96 | 27.4575 | 0.8868 | 0.1586 | 2600000 | 0.0175 | 3408.8328 |
+| liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_scaleslr01_fps12_conf96 | 27.3842 | 0.8850 | 0.1629 | 2600000 | 0.0174 | 3398.3758 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500_fps12_conf96 | 27.4306 | 0.8861 | 0.1621 | 2600000 | 0.0176 | 3453.3246 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01_fps12_conf96 | 27.4601 | 0.8854 | 0.1723 | 2600000 | 0.0179 | 3644.2475 |
 | liminal_pool | fps12_conf96 | da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam_fps12_conf96 | 27.4007 | 0.8852 | 0.1639 | 2600000 | 0.0145 | 2305.2455 |

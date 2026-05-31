@@ -127,6 +127,7 @@ Starting configs:
 - `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85.yaml`
 - `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4.yaml`
 - `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01.yaml`
+- `configs/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01.yaml`
 - `configs/da3_xfeat_mask_mcmc_pose_dense_depthreg.yaml`
 - `configs/da3_ga_xfeat_v2_gs.yaml`
 - `configs/da3_ga_xfeat_v2_mcmc_pose_depthreg.yaml`
@@ -140,6 +141,8 @@ Current `liminal_pool fps12_conf96` DA3/VGGTX target results:
 | `da3_gs` | 26.4729 | 0.8723 | 0.2516 | Naive DA3 initialization baseline |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4` | 27.4575 | 0.8868 | 0.1586 | Best no-pose PSNR/SSIM/LPIPS target |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_ssim01` | 27.4601 | 0.8854 | 0.1723 | Best PSNR-only target; worse SSIM/LPIPS |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01` | 27.3809 | 0.8835 | 0.1549 | Best no-pose LPIPS/perceptual target |
+| `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2` | 27.4336 | 0.8850 | 0.1555 | Batch-size 2 LPIPS trade-off |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85` | 27.4335 | 0.8864 | 0.1616 | Previous weak-depth target |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_shint500` | 27.4306 | 0.8861 | 0.1621 | Earlier SH activation; no gain over balanced target |
 | `da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_visible_adam` | 27.4007 | 0.8852 | 0.1639 | Faster training/render, lower quality |

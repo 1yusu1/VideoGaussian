@@ -290,6 +290,38 @@
       "val_step": 29999
     },
     {
+      "lpips": 0.15553735196590424,
+      "method": "da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_fps12_conf96",
+      "metrics_dir": "/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2/gsplat/stats",
+      "num_GS": 2600000,
+      "peak_gpu_memory_mib": null,
+      "psnr": 27.433570861816406,
+      "render_fps": 54.09495398207956,
+      "render_time_sec_per_image": 0.018486012583193573,
+      "result_dir": "/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2/gsplat",
+      "scene": "liminal_pool",
+      "setting": "fps12_conf96",
+      "ssim": 0.8849870562553406,
+      "training_time_sec": 5990.85901427269,
+      "val_step": 29999
+    },
+    {
+      "lpips": 0.15492625534534454,
+      "method": "da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01_fps12_conf96",
+      "metrics_dir": "/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01/gsplat/stats",
+      "num_GS": 2600000,
+      "peak_gpu_memory_mib": null,
+      "psnr": 27.380859375,
+      "render_fps": 53.97005573290278,
+      "render_time_sec_per_image": 0.018528793169104534,
+      "result_dir": "/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_batch2_scaleslr01/gsplat",
+      "scene": "liminal_pool",
+      "setting": "fps12_conf96",
+      "ssim": 0.88350909948349,
+      "training_time_sec": 5836.332222223282,
+      "val_step": 29999
+    },
+    {
       "lpips": 0.1585526466369629,
       "method": "da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_fps12_conf96",
       "metrics_dir": "/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4/gsplat/stats",
@@ -303,6 +335,22 @@
       "setting": "fps12_conf96",
       "ssim": 0.8868390917778015,
       "training_time_sec": 3408.8327786922455,
+      "val_step": 29999
+    },
+    {
+      "lpips": 0.16292323172092438,
+      "method": "da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_scaleslr01_fps12_conf96",
+      "metrics_dir": "/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_scaleslr01/gsplat/stats",
+      "num_GS": 2600000,
+      "peak_gpu_memory_mib": null,
+      "psnr": 27.384172439575195,
+      "render_fps": 57.362880649235436,
+      "render_time_sec_per_image": 0.017432876255201256,
+      "result_dir": "/data1/panshihan/videogaussian_runs/liminal_pool_fps24_conf96/da3_xfeat_mask_mcmc_cap2600_dense_w0005_conf85_sh4_scaleslr01/gsplat",
+      "scene": "liminal_pool",
+      "setting": "fps12_conf96",
+      "ssim": 0.8849917054176331,
+      "training_time_sec": 3398.3757677078247,
       "val_step": 29999
     },
     {
