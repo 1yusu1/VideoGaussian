@@ -18,7 +18,7 @@ src/videogaus/        Python package for data, geometry, gsplat, and eval.
 third_party/          Submodules or path notes only.
 outputs/              Generated runs.
 reports/              Markdown summaries.
-assets/               Local videos and qualitative assets.
+assets/               Local videos, text-to-video prompt CSVs, and qualitative assets.
 ```
 
 ## Setup
@@ -36,10 +36,36 @@ Install external systems separately following their upstream instructions:
 - Depth Anything 3 CLI available as `da3`, or configured through `third_party.depth_anything_3`.
 - XFeat available through a local `verlab/accelerated_features` checkout for DA3 support selection.
 - gsplat examples available at `third_party/gsplat/examples` or `paths.gsplat_examples_dir`.
+- Diffusers text-to-video models are optional and should live in a separate environment.
 
 Public external repositories can be added as Git submodules; you usually do not need to contact maintainers, but you must follow each project license and model weight terms.
 
 ## One-Command Stages
+
+Optionally generate a source video from text prompts before running reconstruction. Edit `assets/t2v_prompts.example.csv` with `scene`, `prompt`, `negative_prompt`, and `seed` columns. For the first model download, leave `HF_HUB_OFFLINE` unset; after weights are cached, run offline:
+
+```bash
+conda activate t2v_diffusers
+export HF_HOME=/data1/panshihan/hf_cache
+export HF_HUB_CACHE=/data1/panshihan/hf_cache/hub
+export HF_HUB_OFFLINE=1
+
+python scripts/generate_t2v_diffusers.py \
+  --backend ltx \
+  --model-id Lightricks/LTX-Video \
+  --prompts-file assets/t2v_prompts.example.csv \
+  --scene open_plan_living_walkthrough \
+  --output-dir /data1/panshihan/videogaussian_generated/ltx_open_plan_living_1024x576 \
+  --height 576 \
+  --width 1024 \
+  --num-frames 257 \
+  --fps 24 \
+  --num-inference-steps 30 \
+  --guidance-scale 5.0 \
+  --dtype bf16
+```
+
+After the model is cached, keep `HF_HUB_OFFLINE=1` for reproducible offline runs. The generated MP4 can then be passed to the normal frame extraction stage as `--video`.
 
 Prepare frames and train/test split:
 
@@ -136,6 +162,8 @@ Current `liminal_pool fps12_conf96` DA3/VGGTX target result:
 | `colmap_gs` | 34.5433 | 0.9600 | 0.0813 | COLMAP-friendly reference |
 
 The retained target improves over naive DA3 by `+0.9846` PSNR, `+0.0145` SSIM, and `-0.0931` LPIPS. The compact evidence and run paths live in `reports/report.md`.
+
+The generated open-plan apartment sanity experiment used `Lightricks/LTX-Video` at `1024x576`, `257` frames, and `24` fps, then followed the same COLMAP, DA3, and DA3 XFeat-mask evaluation flow. Its retained metrics are also in `reports/report.md`.
 
 ## Useful Modules
 
