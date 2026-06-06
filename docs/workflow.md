@@ -46,7 +46,7 @@ The final merged result is:
 <RUN_DIR>/<scene>_final.ply
 ```
 
-The final `summary.json` and scene report are generated with:
+Ad-hoc metric summaries can be generated with:
 
 ```bash
 bash scripts/make_report.sh \
@@ -54,5 +54,7 @@ bash scripts/make_report.sh \
   --metrics-root <runs_dir> \
   --output-dir reports
 ```
+
+The retained consolidated results are kept in `reports/report.md`.
 
 VGGT-Omega is not part of the active workflow because its checkpoint was unavailable for the completed study.
